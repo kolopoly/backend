@@ -18,15 +18,23 @@ class Games_manager:
     def create_game(self, user_id: int):
         game_id = self.generate_random_id()
         game = Game(game_id, user_id)
-        self.games[user_id] = game
+        self.games[game_id] = game
         return game_id
 
     def connect_to_game(self, game_id: int, user_id: int, ws: WebSocket):
+        print(game_id)
+        print(self.games)
+        
         if not self.is_game_consist(game_id):
             return False                
-        if (self.games[game_id].add_player(Player(user_id, ws))):
+        if (self.games[game_id].add_player(Player(user_id, ws))):            
             print(f"User {user_id} connected to game {game_id}")
             return True
         return False
+    
+    def get_users(self, game_id: int):
+        if not self.is_game_consist(game_id):
+            return []
+        return self.games[game_id].get_users()
     
     

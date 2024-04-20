@@ -4,8 +4,7 @@ class Game:
     host_id = None
     game_id = None
     
-    def __init__(self, game_id, host_id):
-        self.players = []
+    def __init__(self, game_id, host_id):        
         self.round = 0
         self.game_id = game_id
         self.host = host_id        
@@ -13,5 +12,11 @@ class Game:
     def add_player(self, player):
         if self.is_started:
             return False
-        self.players.append({player.get_id(): player})
+        self.players[player.get_id()] = player
         return True
+    
+    def get_users(self):
+        res = []
+        for player in self.players:
+            res.append(self.players.get(player).get_id())
+        return res

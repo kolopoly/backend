@@ -12,5 +12,8 @@ class Player:
     def get_id(self):
         return self.player_id
 
-    def get_ws(self):
+    def get_webSocket(self):
         return self.ws
+    
+    def send_json_message(self, msg):
+        self.ws.send(msg)

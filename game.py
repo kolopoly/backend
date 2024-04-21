@@ -1,4 +1,5 @@
 import random
+import json
 
 
 class Game:
@@ -257,6 +258,12 @@ class Game:
         self.actions["sell"] = self.check_action_sell(player_id)
         self.actions["pay"] = self.check_action_pay(player_id)
         self.actions["upgrade"] = self.check_action_upgrade(player_id)
+        
+        msg = json.dumps(self.actions)
+        
+        for player in self.players:
+            player.send_json_message(msg)
+            
 
     def check_action_buy(self, player_id):
         if self.fields[self.players_positions[player_id]].get_owner() is not None:

@@ -16,4 +16,4 @@ class Player:
         return self.ws
     
     async def send_json_message(self, msg):               
-        await self.ws.send(msg)
+        await self.ws.send_text(msg)

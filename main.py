@@ -1,3 +1,5 @@
+import json
+
 from fastapi import FastAPI, WebSocket
 import websockets
 import uvicorn
@@ -12,6 +14,12 @@ async def create(user_id: int):
     game_id = gm.create_game(user_id)
     print(f"Game created by user {user_id} with game_id {game_id}")
     return game_id
+
+
+@app.get("/get_rule/{rule_id}")
+async def get_rule(rule_id: int):
+    with open("test.json") as f:
+        return json.loads(f.read())
 
 
 @app.get("/connect/{user_id}/{game_id}")

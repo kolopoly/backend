@@ -172,36 +172,36 @@ class Game:
             return False
         # TODO
         return False
-
+    
     def end_turn(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
         return False
-
+    
     def roll(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
         return False
-
+    
     def sell(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
         return False
-
+    
     def pay(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
         return False
-
+    
     def upgrade(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
-        return False
+        return False    
 
 
 

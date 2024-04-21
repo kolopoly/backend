@@ -9,7 +9,7 @@ class Player:
     def __init__(self, player_id: int, ws: WebSocket, player_money: int = 1500):
         self.player_id = player_id
         self.ws = ws
-
+        self.player_money = player_money
 
     def get_id(self):
         return self.player_id

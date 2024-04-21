@@ -91,7 +91,7 @@ class Game:
         self.check_ids([player_id], [])
         if self.active_player != player_id:
             raise Exception("not active player tries to end turn.")
-        self.active_player = (self.active_player + 1) % len(self.players)
+        self.active_player = (self.active_player + 1) % len(self.players_order)
         self.active_player_counter = 0
         self.clean_all_actions_values()
         return True
@@ -116,7 +116,7 @@ class Game:
         self.players[player_id].set_money(self.players[player_id].get_money() - self.fields[field_id].get_buy_price())
         self.fields[field_id].set_owner(player_id)
         if self.check_street_ownership(player_id, self.fields[field_id].get_street_id()):
-            self.upgrade_street( self.fields[field_id].get_street_id())
+            self.upgrade_street(self.fields[field_id].get_street_id())
         return True
 
     def check_street_ownership(self, player_id, street_id):
@@ -195,7 +195,7 @@ class Game:
             return False
         rent = self.fields[field_id].get_fee()
         if self.players[customer_id].get_money() < rent:
-            #TODO: bankrupt
+            # TODO: bankrupt
             self.recursive_sell_all(customer_id)
             if self.players[customer_id].get_money() < rent:
                 self.players[owner_id].set_money(self.players[owner_id].get_money() +
@@ -256,9 +256,9 @@ class Game:
         self.actions["sell"] = self.check_action_sell(player_id)
         self.actions["pay"] = self.check_action_pay(player_id)
         self.actions["upgrade"] = self.check_action_upgrade(player_id)
-        
+
         msg = json.dumps(self.actions)
-        
+
         for player in self.players:
             player.send_json_message(msg)
 
@@ -352,7 +352,7 @@ class Game:
         return self.actions_list
 
     def surrender(self, player_id):
-        #TODO
+        # TODO
         return False
 
     def buy(self, player_id):

@@ -175,12 +175,12 @@ class Game:
         # TODO
 
         return False
-    
+
     def end_turn(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
         return self.end_cur_turn(player_id)
-    
+
     def roll(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
@@ -189,24 +189,24 @@ class Game:
         self.last_rolls = [dice1, dice2]
         self.update_position(player_id, dice1, dice2)
         return True
-    
+
     def sell(self, player_id, field_id):
         if (player_id != self.get_active_player_id()):
             return False
         self.sell_field(player_id, field_id)
         return False
-    
+
     def pay(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
         return False
-    
+
     def upgrade(self, player_id, field_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
-        return False    
+        return False
 
 
 

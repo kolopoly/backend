@@ -37,4 +37,32 @@ class Games_manager:
             return []
         return self.games[game_id].get_users()
     
+    def buy(self, game_id: int, player_id: int):
+        if not self.is_game_consist(game_id):
+            return False
+        return self.games[game_id].buy(player_id)        
     
+    def end_turn(self, game_id: int, player_id: int):
+        if not self.is_game_consist(game_id):
+            return False
+        return self.games[game_id].end_turn(player_id)
+    
+    def roll(self, game_id: int, player_id: int):
+        if not self.is_game_consist(game_id):
+            return False
+        return self.games[game_id].roll_dice(player_id)    
+   
+    def sell(self, game_id: int, player_id: int):
+        if not self.is_game_consist(game_id):
+            return False
+        return self.games[game_id].sell(player_id)    
+    
+    def pay(self, game_id: int, player_id: int):
+        if not self.is_game_consist(game_id):
+            return False
+        return self.games[game_id].pay(player_id)    
+    
+    def upgrade(self, game_id: int, player_id: int):
+        if not self.is_game_consist(game_id):
+            return False
+        return self.games[game_id].upgrade(player_id)

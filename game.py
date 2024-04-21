@@ -37,7 +37,7 @@ class Game:
                 field_data.get('sell_price', 0),
                 field_data.get('upgrade_price', 0),
                 field_data.get('upgrade_price', 0),
-                field_data['fees', [0]]
+                field_data.get('fees', [0])
             )
             fields.append(field)
             counter += 1

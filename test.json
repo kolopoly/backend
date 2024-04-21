@@ -1,0 +1,270 @@
+{
+  "rule_id": 1,
+  "field_amount": 16,
+  "start_balance": 500,
+
+  "fields": [
+     {
+      "name": "Start",
+      "street_id": -1,
+      "add_to_balance": 50
+    },
+    {
+      "name": "H&M",
+      "street_id": 1,
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Lacoste",
+      "street_id": 1,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Zara",
+      "street_id": 1,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "H&M",
+      "street_id": 2,
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Lacoste",
+      "street_id": 2,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Zara",
+      "street_id": 2,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "H&M",
+      "street_id": 3,
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Lacoste",
+      "street_id": 3,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Zara",
+      "street_id": 3,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "H&M",
+      "street_id": 4,
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Lacoste",
+      "street_id": 4,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Zara",
+      "street_id": 4,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "H&M",
+      "street_id": 5,
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Lacoste",
+      "street_id": 5,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    },
+    {
+      "name": "Zara",
+      "street_id": 5,
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "sell_price": 50,
+      "buy_price": 70,
+      "upgrage_price": 30
+    }
+  ],
+  "streets": {
+    "1": {
+      "color": "red"
+    },
+    "2": {
+      "color": "green"
+    },
+    "3": {
+      "color": "blue"
+    },
+    "4": {
+      "color": "orange"
+    },
+    "5": {
+      "color": "grey"
+    }
+  }
+}

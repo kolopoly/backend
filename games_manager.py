@@ -1,3 +1,5 @@
+import json
+
 from fastapi import FastAPI, WebSocket
 from game import Game
 from player import Player
@@ -17,10 +19,14 @@ class Games_manager:
         return x
 
     def create_game(self, user_id: int):
-        game_id = self.generate_random_id()
-        game = Game(game_id, user_id)
-        self.games[game_id] = game
-        return game_id
+
+        with open("test.json") as f:
+            x = f.read()
+            x = json.loads(x)
+            game_id = self.generate_random_id()
+            game = Game(game_id, user_id, x)
+            self.games[game_id] = game
+            return game_id
 
     def connect_to_game(self, game_id: int, user_id: int, ws: WebSocket):
         print(game_id)

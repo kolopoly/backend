@@ -81,7 +81,6 @@ class Game:
             self.players_positions[player_id] = 0
             return False
         else:
-            previous_position = self.players_positions[player_id]
             self.players_positions[player_id] = (self.players_positions[player_id] + dice1 + dice2) % len(self.fields)
             #TODO: check if player passed start
             #TODO: check if player landed on field with owner
@@ -275,6 +274,7 @@ class Game:
         game_state["last_rolls"] = self.last_rolls
         game_state["active_player"] = self.get_active_player_id()
         game_state["actions"] = self.actions
+        game_state["game_over"] = self.players_still_in_game.count(True) == 1
 
         msg = json.dumps(game_state)
 

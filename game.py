@@ -45,32 +45,33 @@ class Game:
     def roll_dice(self):
         return random.randint(1, 6)
 
-    def make_move(self, player_id, dice1, dice2):
+    def update_position(self, player_id, dice1, dice2):
         self.check_ids([player_id], [])
         self.round += 1
         self.active_player_counter += 1
         if self.active_player_counter == 3:
             #TODO: go to jail
+            self.players_positions[player_id] = 0
             pass
         else:
             self.players_positions[player_id] = (self.players_positions[player_id] + dice1 + dice2) % len(self.fields)
             #TODO: check if player passed start
             #TODO: check if player landed on field with owner
 
-        if dice1 == dice2 and not self.active_player_counter == 3:
-            return True
-
-        self.active_player = (self.active_player + 1) % len(self.players)
-        self.active_player_counter = 0
         return True
 
-    def next_turn(self, player_id):
+    def end_cur_turn(self, player_id):
         self.check_ids([player_id], [])
         if self.active_player != player_id:
-            return False
+            raise Exception("not active player tries to end turn.")
         self.active_player = (self.active_player + 1) % len(self.players)
         self.active_player_counter = 0
+        self.clean_all_actions_values()
         return True
+
+    def clean_all_actions_values(self):
+        for key in self.actions:
+            self.actions[key] = 0
 
     def get_player_position(self, player_id):
         return self.players_positions[player_id]
@@ -86,11 +87,13 @@ class Game:
         return True
 
     def sell_field(self, player_id, field_id):
-        self.check_ids([player_id],[field_id])
+        self.check_ids([player_id], [field_id])
         if self.fields[field_id].get_owner() != player_id:
             return False
-        self.players[player_id].set_money(self.players[player_id].get_money() + self.fields[field_id].get_sell_price())
-        self.fields[field_id].set_owner(None)
+        keep_ownership, money = self.fields[field_id].downgrade()
+        if not keep_ownership:
+            self.fields[field_id].set_owner(None)
+        self.players[player_id].set_money(self.players[player_id].get_money() + money)
         return True
 
     def contract_trade_fields(self, player1_id, player2_id, fields_ids, money):
@@ -166,29 +169,31 @@ class Game:
             return []
         pass
 
-
     def buy(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
+
         return False
     
     def end_turn(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
-        # TODO
-        return False
+        return self.end_cur_turn(player_id)
     
     def roll(self, player_id):
         if (player_id != self.get_active_player_id()):
             return False
-        # TODO
-        return False
+        dice1 = self.roll_dice()
+        dice2 = self.roll_dice()
+        self.last_rolls = [dice1, dice2]
+        self.update_position(player_id, dice1, dice2)
+        return True
     
-    def sell(self, player_id):
+    def sell(self, player_id, field_id):
         if (player_id != self.get_active_player_id()):
             return False
-        # TODO
+        self.sell_field(player_id, field_id)
         return False
     
     def pay(self, player_id):
@@ -197,7 +202,7 @@ class Game:
         # TODO
         return False
     
-    def upgrade(self, player_id):
+    def upgrade(self, player_id, field_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
@@ -293,6 +298,16 @@ class Field:
         if self.built_hotels < self.limit_hotels:
             return self.build_hotel(money)
         return False, money
+
+    def downgrade(self):
+        if self.built_hotels > 0:
+            self.built_hotels = 0
+            self.built_houses = self.limit_houses
+            return True, self.hotel_price
+        elif self.built_houses > 0:
+            self.built_houses -= 1
+            return True, self.house_price
+        return False, self.sell_price
 
     def get_rent(self):
         return self.house_rent * self.built_houses + self.hotel_rent * self.built_hotels

@@ -1,6 +1,3 @@
-import random
-
-
 class Game:
     players = {}
     is_started = False
@@ -11,11 +8,15 @@ class Game:
     players_positions = {}
     active_player = 0
     active_player_counter = 0
+    last_rolls = []
+    actions = {}
+    actions_list = ["end_turn", "surrender", "next"]
 
     def __init__(self, game_id, host_id, json_cards):
         self.round = 0
         self.game_id = game_id
         self.host = host_id
+        #set all values in list of actions to 0
 
     def add_player(self, player):  # don't we have to ask for numb of max players in room?
         if self.is_started:
@@ -36,6 +37,7 @@ class Game:
         random.shuffle(self.players_order)
         self.players_positions = {player_id: 0 for player_id in self.players}
         self.is_started = True
+        last_rolls = [1, 1]
         return True
 
     def roll_dice(self):
@@ -56,6 +58,14 @@ class Game:
         if dice1 == dice2 and not self.active_player_counter == 3:
             return True
 
+        self.active_player = (self.active_player + 1) % len(self.players)
+        self.active_player_counter = 0
+        return True
+
+    def next_turn(self, player_id):
+        self.check_ids([player_id], [])
+        if self.active_player != player_id:
+            return False
         self.active_player = (self.active_player + 1) % len(self.players)
         self.active_player_counter = 0
         return True
@@ -135,6 +145,24 @@ class Game:
 
     def get_active_player_id(self):
         return self.players_order[self.active_player]
+
+    def send_game_state(self):
+        pass
+
+    def get_players_info(self):
+        players_info = {
+            "playersNumber": len(self.players),
+            "playersMoney": [self.players[player_id].get_money() for player_id in self.players_order],
+            "playersAvatar": [None for player_id in self.players_order],
+            "playersNames": [self.players[player_id].get_name() for player_id in self.players_order],
+            "currentPlayer": self.get_active_player_id(),
+        }
+        return players_info
+
+    def get_possible_actions(self, player_id):
+        if self.active_player != player_id:
+            return []
+        pass
 
 
 

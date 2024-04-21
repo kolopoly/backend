@@ -52,17 +52,17 @@ class Games_manager:
             return False
         return self.games[game_id].roll_dice(player_id)    
    
-    def sell(self, game_id: int, player_id: int):
+    def sell(self, game_id: int, player_id: int, field_id: int):
         if not self.is_game_consist(game_id):
             return False
-        return self.games[game_id].sell(player_id)    
+        return self.games[game_id].sell(player_id, field_id)    
     
     def pay(self, game_id: int, player_id: int):
         if not self.is_game_consist(game_id):
             return False
         return self.games[game_id].pay(player_id)    
     
-    def upgrade(self, game_id: int, player_id: int):
+    def upgrade(self, game_id: int, player_id: int, field_id: int):
         if not self.is_game_consist(game_id):
             return False
-        return self.games[game_id].upgrade(player_id)
+        return self.games[game_id].upgrade(player_id, field_id)

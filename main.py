@@ -32,17 +32,17 @@ async def end_turn(game_id: int, player_id: int):
 async def roll(game_id: int, player_id: int):
     return gm.roll(game_id, player_id)
 
-@app.get("sell/{game_id}/{player_id}")
-async def sell(game_id: int, player_id: int):
-    return gm.sell(game_id, player_id)
+@app.get("sell/{game_id}/{player_id}/{field_id}")
+async def sell(game_id: int, player_id: int, field_id: int):
+    return gm.sell(game_id, player_id, field_id)
 
 @app.get("pay/{game_id}/{player_id}")
 async def pay(game_id: int, player_id: int):
     return gm.pay(game_id, player_id)
 
-@app.get("upgrade/{game_id}/{player_id}")
-async def upgrade(game_id: int, player_id: int):
-    return gm.upgrade(game_id, player_id)
+@app.get("upgrade/{game_id}/{player_id}/{field_id}")
+async def upgrade(game_id: int, player_id: int, field_id: int):
+    return gm.upgrade(game_id, player_id, field_id)
 
 
 # WebSockets:

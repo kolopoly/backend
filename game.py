@@ -154,7 +154,7 @@ class Game:
         # TODO
         return False
     
-    def sell(self, player_id):
+    def sell(self, player_id, field_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO
@@ -166,7 +166,7 @@ class Game:
         # TODO
         return False
     
-    def upgrade(self, player_id):
+    def upgrade(self, player_id, field_id):
         if (player_id != self.get_active_player_id()):
             return False
         # TODO

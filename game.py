@@ -57,7 +57,9 @@ class Game:
             res.append(self.players.get(player).get_id())
         return res
 
-    def start_game(self, json_settings):
+    def start_game(self, player_id):
+        if player_id != self.host_id:
+            return False
         if self.is_started:
             return False
         self.players_order = list(self.players.keys())

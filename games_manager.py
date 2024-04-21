@@ -84,3 +84,10 @@ class Games_manager:
         res = self.games[game_id].upgrade(player_id, field_id)
         await self.games[game_id].send_game_state()
         return res
+    
+    async def start_game(self, game_id: int, player_id: int):
+        if not self.is_game_consist(game_id):
+            return False
+        res = self.games[game_id].start_game(player_id)
+        await self.games[game_id].send_game_state()
+        return res

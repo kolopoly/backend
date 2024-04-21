@@ -36,6 +36,7 @@ class Games_manager:
             return False
         if (self.games[game_id].add_player(Player(user_id, ws))):
             print(f"User {user_id} connected to game {game_id}")
+            self.games[game_id].send_game_state()        
             return True
         return False
 
@@ -47,29 +48,41 @@ class Games_manager:
     def buy(self, game_id: int, player_id: int):
         if not self.is_game_consist(game_id):
             return False
-        return self.games[game_id].buy(player_id)
+        res = self.games[game_id].buy(player_id)
+        self.games[game_id].send_game_state()
+        return res
 
     def end_turn(self, game_id: int, player_id: int):
         if not self.is_game_consist(game_id):
             return False
-        return self.games[game_id].end_turn(player_id)
+        res = self.games[game_id].end_turn(player_id)
+        self.games[game_id].send_game_state()
+        return res
 
     def roll(self, game_id: int, player_id: int):
         if not self.is_game_consist(game_id):
             return False
-        return self.games[game_id].roll_dice(player_id)
+        res = self.games[game_id].roll_dice(player_id)
+        self.games[game_id].send_game_state()
+        return res
 
     def sell(self, game_id: int, player_id: int, field_id: int):
         if not self.is_game_consist(game_id):
             return False
-        return self.games[game_id].sell(player_id, field_id)
+        res = self.games[game_id].sell(player_id, field_id)
+        self.games[game_id].send_game_state()
+        return res
 
     def pay(self, game_id: int, player_id: int):
         if not self.is_game_consist(game_id):
             return False
-        return self.games[game_id].pay(player_id)
+        res = self.games[game_id].pay(player_id)
+        self.games[game_id].send_game_state()
+        return res
 
     def upgrade(self, game_id: int, player_id: int, field_id: int):
         if not self.is_game_consist(game_id):
             return False
-        return self.games[game_id].upgrade(player_id, field_id)
+        res = self.games[game_id].upgrade(player_id, field_id)
+        self.games[game_id].send_game_state()
+        return res

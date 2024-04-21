@@ -8,6 +8,7 @@ class Game:
     game_id = None
     fields = []
     players_order = []
+    players_still_in_game = []
     players_positions = {}
     active_player = 0
     active_player_counter = 0
@@ -52,8 +53,9 @@ class Game:
         if self.active_player_counter == 3:
             #TODO: go to jail
             self.players_positions[player_id] = 0
-            pass
+            return False
         else:
+            previous_position = self.players_positions[player_id]
             self.players_positions[player_id] = (self.players_positions[player_id] + dice1 + dice2) % len(self.fields)
             #TODO: check if player passed start
             #TODO: check if player landed on field with owner
@@ -117,11 +119,14 @@ class Game:
         self.check_ids([player_id], [field_id])
         if player_id != self.fields[field_id].get_owner():
             return False
+        for field in self.fields:
+            if field.get_street_id() == self.fields[field_id].get_street_id() and field.get_owner() != player_id:
+                return False
         result, money = self.fields[field_id].upgrade(self.players[player_id].get_money())
         if not result:
             return False
         self.players[player_id].set_money(money)
-        pass
+        return True
 
     def pay_rent(self, customer_id, owner_id, field_id):
         self.check_ids([customer_id, owner_id], [field_id])
@@ -167,55 +172,59 @@ class Game:
     def get_possible_actions(self, player_id):
         if self.active_player != player_id:
             return []
-        pass
+        return self.actions_list
+
+    def surrender(self, player_id):
+        if player_id != self.get_active_player_id():
+            return False
+        self.players[player_id].set_money(0)
+        return True
 
     def buy(self, player_id):
-        if (player_id != self.get_active_player_id()):
+        if player_id != self.get_active_player_id():
             return False
-        # TODO
-
-        return False
+        return self.buy_field(player_id, self.players_positions[player_id])
 
     def end_turn(self, player_id):
-        if (player_id != self.get_active_player_id()):
+        if player_id != self.get_active_player_id():
             return False
         return self.end_cur_turn(player_id)
 
     def roll(self, player_id):
-        if (player_id != self.get_active_player_id()):
+        if player_id != self.get_active_player_id():
             return False
         dice1 = self.roll_dice()
         dice2 = self.roll_dice()
         self.last_rolls = [dice1, dice2]
-        self.update_position(player_id, dice1, dice2)
-        return True
+        previous_position = self.players_positions[player_id]
+        result = self.update_position(player_id, dice1, dice2)
+        if result and previous_position + dice1 + dice2 > len(self.fields):
+            self.players[player_id].set_money(self.players[player_id].get_money() + 1000)
+        return False
 
     def sell(self, player_id, field_id):
-        if (player_id != self.get_active_player_id()):
+        if player_id != self.get_active_player_id():
             return False
         self.sell_field(player_id, field_id)
         return False
 
     def pay(self, player_id):
-        if (player_id != self.get_active_player_id()):
+        if player_id != self.get_active_player_id():
             return False
-        # TODO
-        return False
+        return self.pay_rent(player_id,
+                             self.fields[self.players_positions[player_id]].get_owner(),
+                             self.players_positions[player_id])
 
     def upgrade(self, player_id, field_id):
-        if (player_id != self.get_active_player_id()):
+        if player_id != self.get_active_player_id():
             return False
-        # TODO
-        return False
-
-
-
+        return self.upgrade_field(player_id, field_id)
 
 
 class Field:
     id = None
     name = None
-    group_id = None
+    street_id = None
     owner = None
 
     buy_price = None
@@ -230,10 +239,10 @@ class Field:
     limit_houses = 4
     limit_hotels = 1
 
-    def __init__(self, id, name, group_id, buy_price, sell_price, house_price, hotel_price, house_rent, hotel_rent):
+    def __init__(self, id, name, street_id, buy_price, sell_price, house_price, hotel_price, house_rent, hotel_rent):
         self.id = id
         self.name = name
-        self.group_id = group_id
+        self.street_id = street_id
         self.buy_price = buy_price
         self.sell_price = sell_price
         self.house_price = house_price
@@ -270,6 +279,9 @@ class Field:
 
     def get_built_hotels(self):
         return self.built_hotels
+
+    def get_street_id(self):
+        return self.street_id
 
     def build_house(self, money):
         if self.built_houses >= self.limit_houses:

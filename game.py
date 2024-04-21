@@ -22,7 +22,7 @@ class Game:
     def __init__(self, game_id, host_id, rules_json):
         self.round = 0
         self.game_id = game_id
-        self.host = host_id
+        self.host_id = host_id
         self.fields = self.parse_input_rules_json(rules_json)
 
     def parse_input_rules_json(self, json_data):

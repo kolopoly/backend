@@ -266,7 +266,7 @@ class Game:
         if not self.is_started:
             game_state = {}
             game_state["players"] = {player_id: self.players[player_id].get_id()
-                                        for player_id in self.players_order}        
+                                        for player_id in self.players}        
         else:
             self.update_actions(self.get_active_player_id())
             game_state = {}

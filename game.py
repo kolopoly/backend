@@ -1,3 +1,4 @@
+import random
 class Game:
     players = {}
     is_started = False

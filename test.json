@@ -23,7 +23,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Lacoste",
@@ -39,7 +39,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Zara",
@@ -55,7 +55,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "H&M",
@@ -71,7 +71,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Lacoste",
@@ -87,7 +87,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Zara",
@@ -103,7 +103,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "H&M",
@@ -119,7 +119,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Lacoste",
@@ -135,7 +135,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Zara",
@@ -151,7 +151,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "H&M",
@@ -167,7 +167,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Lacoste",
@@ -183,7 +183,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Zara",
@@ -199,7 +199,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "H&M",
@@ -215,7 +215,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Lacoste",
@@ -231,7 +231,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     },
     {
       "name": "Zara",
@@ -247,7 +247,7 @@
       ],
       "sell_price": 50,
       "buy_price": 70,
-      "upgrage_price": 30
+      "upgrade_price": 30
     }
   ],
   "streets": {

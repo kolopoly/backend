@@ -17,7 +17,7 @@ class Game:
     actions = {}
     completed_actions = {}
     actions_list = ["end_turn", "surrender", "next"]
-    bonus_for_circle = 100
+    bonus_for_circle = 100    
 
     def __init__(self, game_id, host_id, rules_json):
         self.round = 0
@@ -248,7 +248,7 @@ class Game:
     def get_active_player_id(self):
         return self.players_order[self.active_player]
 
-    def update_actions(self, player_id):
+    async def update_actions(self, player_id):
         self.actions = {}
         self.actions["buy"] = self.check_action_buy(player_id)
         self.actions["end_turn"] = self.check_action_end_turn(player_id)
@@ -260,26 +260,33 @@ class Game:
         msg = json.dumps(self.actions)
 
         for player in self.players:
-            player.send_json_message(msg)
+            await self.players[player].send_json_message(msg)
 
-    def send_game_state(self):
-        self.update_actions(self.get_active_player_id())
-        game_state = {}
-        game_state["players_positions"] = self.players_positions
-        game_state["players_money"] = {player_id: self.players[player_id].get_money()
-                                       for player_id in self.players_order}
-        game_state["fields_owners_with_levels"] = {field.get_id(): (field.get_owner(), field.get_field_level())
-                                                   for field in self.fields}
-        game_state["round"] = self.round
-        game_state["last_rolls"] = self.last_rolls
-        game_state["active_player"] = self.get_active_player_id()
-        game_state["actions"] = self.actions
-        game_state["game_over"] = self.players_still_in_game.count(True) == 1
+    async def send_game_state(self):   
+        if not self.is_started:
+            game_state = {}
+            game_state["players"] = {player_id: self.players[player_id].get_id()
+                                        for player_id in self.players_order}        
+        else:
+            self.update_actions(self.get_active_player_id())
+            game_state = {}
+            game_state["players"] = {player_id: self.players[player_id].get_id()
+                                        for player_id in self.players_order}
+            game_state["players_positions"] = self.players_positions
+            game_state["players_money"] = {player_id: self.players[player_id].get_money()
+                                        for player_id in self.players_order}
+            game_state["fields_owners_with_levels"] = {field.get_id(): (field.get_owner(), field.get_field_level())
+                                                    for field in self.fields}
+            game_state["round"] = self.round
+            game_state["last_rolls"] = self.last_rolls
+            game_state["active_player"] = self.get_active_player_id()
+            game_state["actions"] = self.actions
+            game_state["game_over"] = self.players_still_in_game.count(True) == 1
 
         msg = json.dumps(game_state)
 
         for player in self.players:
-            player.send_json_message(msg)
+            await self.players[player].send_json_message(msg)
 
 
     def check_action_buy(self, player_id):

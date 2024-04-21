@@ -67,10 +67,10 @@ async def upgrade(game_id: int, player_id: int, field_id: int):
 @app.websocket("/connect/{user_id}/{game_id}")
 async def websocket_endpoint(ws: WebSocket, user_id: int, game_id: int):
     await ws.accept()
-    gm.connect_to_game(game_id, user_id, ws)
+    await gm.connect_to_game(game_id, user_id, ws)
     while True:
         data = await ws.receive_text()
-        gm.send_message(game_id, data)
+        # gm.send_message(game_id, data)
 
         await ws.send_text(f"Message text was: {data}")
 

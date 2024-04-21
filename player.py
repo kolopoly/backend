@@ -15,5 +15,5 @@ class Player:
     def get_webSocket(self):
         return self.ws
     
-    def send_json_message(self, msg):
-        self.ws.send(msg)
+    async def send_json_message(self, msg):               
+        await self.ws.send(msg)

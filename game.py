@@ -1,4 +1,6 @@
 import random
+
+
 class Game:
     players = {}
     is_started = False
@@ -17,7 +19,6 @@ class Game:
         self.round = 0
         self.game_id = game_id
         self.host = host_id
-        #set all values in list of actions to 0
 
     def add_player(self, player):  # don't we have to ask for numb of max players in room?
         if self.is_started:
@@ -165,6 +166,42 @@ class Game:
             return []
         pass
 
+
+    def buy(self, player_id):
+        if (player_id != self.get_active_player_id()):
+            return False
+        # TODO
+        return False
+
+    def end_turn(self, player_id):
+        if (player_id != self.get_active_player_id()):
+            return False
+        # TODO
+        return False
+
+    def roll(self, player_id):
+        if (player_id != self.get_active_player_id()):
+            return False
+        # TODO
+        return False
+
+    def sell(self, player_id):
+        if (player_id != self.get_active_player_id()):
+            return False
+        # TODO
+        return False
+
+    def pay(self, player_id):
+        if (player_id != self.get_active_player_id()):
+            return False
+        # TODO
+        return False
+
+    def upgrade(self, player_id):
+        if (player_id != self.get_active_player_id()):
+            return False
+        # TODO
+        return False
 
 
 

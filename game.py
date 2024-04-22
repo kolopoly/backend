@@ -3,28 +3,28 @@ import json
 
 
 class Game:
-    players = {}
-    is_started = False
-    host_id = None
-    game_id = None
-    fields = []
-    field_ids = []
-    players_order = []
-    players_still_in_game = {}
-    players_positions = {}
-    active_player_pos = 0
-    active_player_counter = 0
-    last_rolls = []
-    actions = {}
-    completed_actions = {}
-    actions_list = ["end_turn", "surrender", "pay"]
-    bonus_for_circle = 100
 
     def __init__(self, game_id, host_id, rules_json):
         self.round = 0
         self.game_id = game_id
-        self.host_id = host_id
-        self.fields = self.parse_input_rules_json(rules_json)
+        self.host_id = host_id        
+        self.players = {}
+        self.is_started = False
+        self.host_id = None
+        self.game_id = None
+        self.fields = []
+        self.field_ids = []
+        self.players_order = []
+        self.players_still_in_game = {}
+        self.players_positions = {}
+        self.active_player_pos = 0
+        self.active_player_counter = 0
+        self.last_rolls = []
+        self.actions = {}
+        self.completed_actions = {}
+        self.actions_list = ["end_turn", "surrender", "pay"]
+        self.bonus_for_circle = 100          
+        self.fields = self.parse_input_rules_json(rules_json)  
 
     def parse_input_rules_json(self, json_data):
         fields_data = json_data.get('fields', [])

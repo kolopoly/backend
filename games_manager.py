@@ -60,7 +60,7 @@ class Games_manager:
     async def roll(self, game_id: int, player_id: int):
         if not self.is_game_consist(game_id):
             return False
-        res = self.games[game_id].roll_dice(player_id)
+        res = self.games[game_id].roll(player_id)
         await self.games[game_id].send_game_state()
         return res
 

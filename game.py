@@ -375,7 +375,7 @@ class Game:
         result = self.update_position(player_id, dice1, dice2)
         if result and previous_position + dice1 + dice2 > len(self.fields):
             self.players[player_id].set_money(self.players[player_id].get_money() + self.bonus_for_circle)
-        return False
+        return True
 
     def sell(self, player_id, field_id):
         if player_id != self.get_active_player_id():

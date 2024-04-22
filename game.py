@@ -80,12 +80,10 @@ class Game:
         if self.active_player_counter == 3:
             #TODO: go to jail
             self.players_positions[player_id] = 0
-            return False
         else:
             self.players_positions[player_id] = (self.players_positions[player_id] + dice1 + dice2) % len(self.fields)
             #TODO: check if player passed start
             #TODO: check if player landed on field with owner
-
         return True
 
     def end_cur_turn(self, player_id):
@@ -412,6 +410,7 @@ class Game:
         dice2 = self.roll_dice()
         self.last_rolls = [dice1, dice2]
         self.completed_actions["roll"] += 1
+        self.completed_actions["pay"] = False
         previous_position = self.players_positions[player_id]
         result = self.update_position(player_id, dice1, dice2)
         if result and previous_position + dice1 + dice2 > len(self.fields):

@@ -8,6 +8,7 @@ class Game:
     host_id = None
     game_id = None
     fields = []
+    field_ids = []
     players_order = []
     players_still_in_game = []
     players_positions = {}
@@ -41,8 +42,8 @@ class Game:
                 field_data.get('fees', [0])
             )
             fields.append(field)
-            counter += 1
-
+            self.field_ids.append(counter)
+            counter += 1        
         return fields
 
     def add_player(self, player):  # don't we have to ask for numb of max players in room?
@@ -91,7 +92,7 @@ class Game:
 
     def end_cur_turn(self, player_id):
         self.check_ids([player_id], [])
-        if self.active_player != player_id:
+        if self.get_active_player_id() != player_id:
             raise Exception("not active player tries to end turn.")
         self.active_player = (self.active_player + 1) % len(self.players_order)
         self.active_player_counter = 0
@@ -118,7 +119,7 @@ class Game:
         self.players[player_id].set_money(self.players[player_id].get_money() - self.fields[field_id].get_buy_price())
         self.fields[field_id].set_owner(player_id)
         if self.check_street_ownership(player_id, self.fields[field_id].get_street_id()):
-            self.upgrade_street(self.fields[field_id].get_street_id())
+            self.upgrade_street(self.fields[field_id].get_street_id())        
         return True
 
     def check_street_ownership(self, player_id, street_id):
@@ -242,8 +243,8 @@ class Game:
         for player_id in player_ids:
             if player_id not in self.players:
                 raise Exception(f"Player {player_id} not exists.\n")
-        for field_id in field_ids:
-            if field_id not in self.fields:
+        for field_id in field_ids:            
+            if field_id not in self.field_ids:
                 raise Exception(f"Field {field_id} not exists.\n")
         return True
 
@@ -335,7 +336,7 @@ class Game:
             return False
         if self.players[player_id].get_money() < self.fields[field_id].get_house_price():
             return False
-        if self.fields[field_id].get_field_level() == len(self.fields[field_id].get_fee()):
+        if self.fields[field_id].get_field_level() == len(self.fields[field_id].get_fees()) - 1:
             return False
         if not self.check_street_ownership(player_id, self.fields[field_id].get_street_id()):
             return False
@@ -360,7 +361,7 @@ class Game:
             return False
         return self.buy_field(player_id, self.players_positions[player_id])
 
-    def end_turn(self, player_id):
+    def end_turn(self, player_id):        
         if player_id != self.get_active_player_id():
             return False
         return self.end_cur_turn(player_id)
@@ -377,11 +378,10 @@ class Game:
             self.players[player_id].set_money(self.players[player_id].get_money() + self.bonus_for_circle)
         return True
 
-    def sell(self, player_id, field_id):
+    def sell(self, player_id, field_id):        
         if player_id != self.get_active_player_id():
             return False
-        self.sell_field(player_id, field_id)
-        return False
+        return self.sell_field(player_id, field_id)        
 
     def pay(self, player_id):
         if player_id != self.get_active_player_id():
@@ -418,7 +418,7 @@ class Field:
         self.sell_price = sell_price
         self.house_price = house_price
         self.hotel_price = hotel_price
-        self.fees = fees
+        self.fees = fees        
 
     def get_id(self):
         return self.id
@@ -475,6 +475,9 @@ class Field:
 
     def get_fee(self):
         return self.fees[self.field_level]
+
+    def get_fees(self):
+        return self.fees
 
     def get_field_level(self):
         return self.field_level

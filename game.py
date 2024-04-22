@@ -215,6 +215,7 @@ class Game:
                                                  rent)
             self.players[customer_id].set_money(0)
             self.set_player_inactive(customer_id)
+            self.completed_actions["pay"] = True
             return True
 
         self.players[customer_id].set_money(self.players[customer_id].get_money() - rent)
@@ -343,6 +344,8 @@ class Game:
         if self.fields[self.players_positions[player_id]].get_owner() is None:
             return False
         if self.fields[self.players_positions[player_id]].get_owner() == player_id:
+            return False
+        if self.completed_actions["pay"]:
             return False
         if self.players[player_id].get_money() < self.fields[self.players_positions[player_id]].get_fee():
             return False

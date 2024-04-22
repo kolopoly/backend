@@ -280,6 +280,7 @@ class Game:
             game_state["fields_owners_with_levels"] = {field.get_id(): (field.get_owner(), field.get_field_level())
                                                     for field in self.fields}
             game_state["round"] = self.round
+            print(self.last_rolls)
             game_state["last_rolls"] = self.last_rolls
             game_state["active_player"] = self.get_active_player_id()
             game_state["actions"] = self.actions

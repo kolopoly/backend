@@ -246,8 +246,9 @@ class Game:
         for player_id in player_ids:
             if player_id not in self.players:
                 raise Exception(f"Player {player_id} not exists.\n")
+        print(self.fields)
         for field_id in field_ids:
-            if field_id not in self.fields:
+            if field_id >= len(self.fields):
                 raise Exception(f"Field {field_id} not exists.\n")
         return True
 
@@ -400,6 +401,7 @@ class Game:
     def buy(self, player_id):
         if player_id != self.get_active_player_id():
             return False
+        print(player_id, self.players_positions[player_id])
         return self.buy_field(player_id, self.players_positions[player_id])
 
     def end_turn(self, player_id):

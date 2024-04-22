@@ -286,7 +286,6 @@ class Game:
             game_state["fields_owners_with_levels"] = {field.get_id(): (field.get_owner(), field.get_field_level())
                                                     for field in self.fields}
             game_state["round"] = self.round
-            print(self.last_rolls)
             game_state["last_rolls"] = self.last_rolls
             game_state["active_player"] = self.get_active_player_id()
             game_state["actions"] = self.actions
@@ -347,8 +346,6 @@ class Game:
             return False
         if self.completed_actions["pay"]:
             return False
-        if self.players[player_id].get_money() < self.fields[self.players_positions[player_id]].get_fee():
-            return False
         return True
 
     def check_action_upgrade(self, player_id):
@@ -383,7 +380,7 @@ class Game:
     def check_action_roll(self, player_id):
         if self.get_active_player_id() != player_id:
             return False
-        if not self.check_if_need_to_pay(player_id):
+        if self.check_if_need_to_pay(player_id):
             return False
         if self.completed_actions.get("roll", 0) == 1:
             if self.last_rolls[0] != self.last_rolls[1]:

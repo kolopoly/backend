@@ -67,7 +67,8 @@ class Game:
             self.players_positions[player_id] = 1
         self.players_positions = {player_id: 0 for player_id in self.players}
         self.is_started = True
-        last_rolls = [1, 1]
+        self.last_rolls = [1, 1]
+        self.clean_all_completed_actions_values()
         return True
 
     def roll_dice(self):
@@ -279,6 +280,7 @@ class Game:
             game_state["fields_owners_with_levels"] = {field.get_id(): (field.get_owner(), field.get_field_level())
                                                     for field in self.fields}
             game_state["round"] = self.round
+            print(self.last_rolls)
             game_state["last_rolls"] = self.last_rolls
             game_state["active_player"] = self.get_active_player_id()
             game_state["actions"] = self.actions
@@ -360,7 +362,7 @@ class Game:
         return True
 
     def check_action_roll(self, player_id):
-        if self.active_player_pos != player_id:
+        if self.get_active_player_id() != player_id:
             return False
         if self.check_if_need_to_pay(player_id):
             return False

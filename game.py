@@ -7,11 +7,9 @@ class Game:
     def __init__(self, game_id, host_id, rules_json):
         self.round = 0
         self.game_id = game_id
-        self.host_id = host_id        
+        self.host_id = host_id
         self.players = {}
         self.is_started = False
-        self.host_id = None
-        self.game_id = None
         self.fields = []
         self.field_ids = []
         self.players_order = []
@@ -56,11 +54,12 @@ class Game:
             res.append(self.players.get(player).get_id())
         return res
 
-    def start_game(self, player_id):
+    def start_game(self, player_id):        
+        # print(self.is_started)
         if player_id != self.host_id:
             return False
         if self.is_started:
-            return False
+            return False        
         self.players_order = list(self.players.keys())
         random.shuffle(self.players_order)
         for player_id in self.players_order:
@@ -71,6 +70,7 @@ class Game:
         for player in self.players:
             self.players_still_in_game[player] = True
         self.clean_all_completed_actions_values()
+        # print(self.is_started)
         return True
 
     def roll_dice(self):

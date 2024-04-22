@@ -86,7 +86,6 @@ class Games_manager:
         return res
     
     async def start_game(self, game_id: int, player_id: int):
-        print(self.is_game_consist(game_id))
         if not self.is_game_consist(game_id):
             return False
         res = self.games[game_id].start_game(player_id)

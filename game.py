@@ -68,6 +68,7 @@ class Game:
         self.players_positions = {player_id: 0 for player_id in self.players}
         self.is_started = True
         self.last_rolls = [1, 1]
+        self.players_still_in_game = [True for _ in self.players_order]
         self.clean_all_completed_actions_values()
         return True
 

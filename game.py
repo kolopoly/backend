@@ -67,7 +67,8 @@ class Game:
             self.players_positions[player_id] = 1
         self.players_positions = {player_id: 0 for player_id in self.players}
         self.is_started = True
-        last_rolls = [1, 1]
+        self.last_rolls = [1, 1]
+        self.clean_all_completed_actions_values()
         return True
 
     def roll_dice(self):
@@ -300,7 +301,11 @@ class Game:
         return True
 
     def check_action_end_turn(self, player_id):
-        if self.active_player_pos != player_id:
+        if self.get_active_player_id() != player_id:
+            return False
+        if self.completed_actions["roll"] == 0:
+            return False
+        if self.check_if_need_to_pay(player_id):
             return False
         return True
 
@@ -360,7 +365,7 @@ class Game:
         return True
 
     def check_action_roll(self, player_id):
-        if self.active_player_pos != player_id:
+        if self.get_active_player_id() != player_id:
             return False
         if self.check_if_need_to_pay(player_id):
             return False

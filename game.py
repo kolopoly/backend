@@ -18,7 +18,7 @@ class Game:
     actions = {}
     completed_actions = {}
     actions_list = ["end_turn", "surrender", "pay"]
-    bonus_for_circle = 100    
+    bonus_for_circle = 100
 
     def __init__(self, game_id, host_id, rules_json):
         self.round = 0
@@ -387,6 +387,7 @@ class Game:
                 return False
             if self.active_player_counter >= 3:
                 return False
+            self.completed_actions["roll"] = 0
         return True
 
     def check_action_surrender(self, player_id):
@@ -427,7 +428,7 @@ class Game:
         dice1 = self.roll_dice()
         dice2 = self.roll_dice()
         self.last_rolls = [dice1, dice2]
-        self.completed_actions["roll"] += 1
+        self.completed_actions["roll"] = 1
         self.completed_actions["pay"] = False
         previous_position = self.players_positions[player_id]
         result = self.update_position(player_id, dice1, dice2)

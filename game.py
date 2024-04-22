@@ -47,8 +47,6 @@ class Game:
         return fields
 
     def add_player(self, player):  # don't we have to ask for numb of max players in room?
-        if self.is_started:
-            return False
         self.players[player.get_id()] = player
         return True
 

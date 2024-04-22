@@ -7,9 +7,13 @@
      {
       "name": "Start",
       "street_id": -1,
-      "add_to_balance": 50
-    },
-    {
+      "add_to_balance": 50,
+       "fees": [],
+       "sell_price": 0,
+      "buy_price": 0,
+      "upgrade_price": 0
+     },
+     {
       "name": "H&M",
       "street_id": 1,
       "fees": [

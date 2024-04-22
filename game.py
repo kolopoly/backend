@@ -10,7 +10,7 @@ class Game:
     fields = []
     field_ids = []
     players_order = []
-    players_still_in_game = []
+    players_still_in_game = {}
     players_positions = {}
     active_player_pos = 0
     active_player_counter = 0
@@ -68,7 +68,8 @@ class Game:
         self.players_positions = {player_id: 0 for player_id in self.players}
         self.is_started = True
         self.last_rolls = [1, 1]
-        self.players_still_in_game = [True for _ in self.players_order]
+        for player in self.players:
+            self.players_still_in_game[player] = True
         self.clean_all_completed_actions_values()
         return True
 
@@ -288,13 +289,19 @@ class Game:
             game_state["last_rolls"] = self.last_rolls
             game_state["active_player"] = self.get_active_player_id()
             game_state["actions"] = self.actions
-            game_state["game_over"] = self.players_still_in_game.count(True) <= 1
+            game_state["game_over"] = (self.get_number_of_players_still_in_game() <= 1)
 
         msg = json.dumps(game_state)
 
         for player in self.players:
             await self.players[player].send_json_message(msg)
 
+    def get_number_of_players_still_in_game(self):
+        counter = 0
+        for player in self.players_still_in_game:
+            if self.players_still_in_game[player]:
+                counter += 1
+        return counter
 
     def check_action_buy(self, player_id):
         if self.fields[self.players_positions[player_id]].get_owner() is not None:

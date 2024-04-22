@@ -3,9 +3,21 @@ import json
 from fastapi import FastAPI, WebSocket
 import websockets
 import uvicorn
+from starlette.middleware.cors import CORSMiddleware
+
 from games_manager import Games_manager
 
 app = FastAPI()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 gm = Games_manager()
 
 
@@ -60,6 +72,7 @@ async def pay(game_id: int, player_id: int):
 @app.get("/upgrade/{game_id}/{player_id}/{field_id}")
 async def upgrade(game_id: int, player_id: int, field_id: int):
     return await gm.upgrade(game_id, player_id, field_id)
+
 
 @app.get("/start_game/{game_id}/{player_id}")
 async def start_game(game_id: int, player_id: int):

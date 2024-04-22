@@ -251,18 +251,9 @@ class Game:
         return self.players_order[self.active_player]
 
     async def update_actions(self, player_id):
-        self.actions = {}
-        self.actions["buy"] = self.check_action_buy(player_id)
-        self.actions["end_turn"] = self.check_action_end_turn(player_id)
-        self.actions["roll"] = self.check_action_roll(player_id)
-        self.actions["sell"] = self.check_action_sell(player_id)
-        self.actions["pay"] = self.check_action_pay(player_id)
-        self.actions["upgrade"] = self.check_action_upgrade(player_id)
-
-        msg = json.dumps(self.actions)
-
-        for player in self.players:
-            await self.players[player].send_json_message(msg)
+        self.actions = {"buy": self.check_action_buy(player_id), "end_turn": self.check_action_end_turn(player_id),
+                        "roll": self.check_action_roll(player_id), "sell": self.check_action_sell(player_id),
+                        "pay": self.check_action_pay(player_id), "upgrade": self.check_action_upgrade(player_id)}
 
     async def send_game_state(self):   
         if not self.is_started:
@@ -270,7 +261,7 @@ class Game:
             game_state["players"] = {player_id: self.players[player_id].get_id()
                                         for player_id in self.players}        
         else:
-            self.update_actions(self.get_active_player_id())
+            await self.update_actions(self.get_active_player_id())
             game_state = {}
             game_state["players"] = {player_id: self.players[player_id].get_id()
                                         for player_id in self.players_order}
@@ -309,9 +300,9 @@ class Game:
         fields_of_player = []
         for field in self.fields:
             if field.get_owner() == player_id and self.check_action_sell_field(player_id, field.get_id()):
-                fields_of_player.append((True, field.get_id()))
+                fields_of_player.append([True, field.get_id()])
             else:
-                fields_of_player.append((False, field.get_id()))
+                fields_of_player.append([False, field.get_id()])
         return fields_of_player
 
     def check_action_sell_field(self, player_id, field_id):
@@ -334,9 +325,9 @@ class Game:
         fields_of_player = []
         for field in self.fields:
             if field.get_owner() == player_id and self.check_action_upgrade_field(player_id, field.get_id()):
-                fields_of_player.append({True, field.get_id()})
+                fields_of_player.append([True, field.get_id()])
             else:
-                fields_of_player.append({False, field.get_id()})
+                fields_of_player.append([False, field.get_id()])
         return fields_of_player
 
     def check_action_upgrade_field(self, player_id, field_id):
@@ -351,7 +342,7 @@ class Game:
         return True
 
     def check_action_roll(self, player_id):
-        if self.completed_actions["roll"] == 1:
+        if self.completed_actions.get("roll", 0) == 1:
             return False
         return True
 

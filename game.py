@@ -110,7 +110,7 @@ class Game:
         self.completed_actions["buy"] = 0
         self.completed_actions["end_turn"] = 0
         self.completed_actions["roll"] = 0
-        self.actions["pay"] = False
+        self.completed_actions["pay"] = False
         # self.actions["upgrade"] = []
 
 

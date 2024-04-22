@@ -12,12 +12,12 @@ class Game:
     players_order = []
     players_still_in_game = []
     players_positions = {}
-    active_player = 0
+    active_player_pos = 0
     active_player_counter = 0
     last_rolls = []
     actions = {}
     completed_actions = {}
-    actions_list = ["end_turn", "surrender", "next"]
+    actions_list = ["end_turn", "surrender", "pay"]
     bonus_for_circle = 100    
 
     def __init__(self, game_id, host_id, rules_json):
@@ -43,7 +43,7 @@ class Game:
             )
             fields.append(field)
             self.field_ids.append(counter)
-            counter += 1        
+            counter += 1
         return fields
 
     def add_player(self, player):  # don't we have to ask for numb of max players in room?
@@ -92,9 +92,10 @@ class Game:
         self.check_ids([player_id], [])
         if self.get_active_player_id() != player_id:
             raise Exception("not active player tries to end turn.")
-        self.active_player = (self.active_player + 1) % len(self.players_order)
+        self.active_player_pos = (self.active_player_pos + 1) % len(self.players_order)
         self.active_player_counter = 0
         self.clean_all_actions_values()
+        self.clean_all_completed_actions_values()
         return True
 
     def clean_all_actions_values(self):
@@ -102,8 +103,13 @@ class Game:
             self.actions[key] = 0
 
     def clean_all_completed_actions_values(self):
-        for key in self.completed_actions:
-            self.completed_actions[key] = 0
+        self.completed_actions = {}
+        self.completed_actions["buy"] = 0
+        self.completed_actions["end_turn"] = 0
+        self.completed_actions["roll"] = 0
+        self.actions["pay"] = False
+        # self.actions["upgrade"] = []
+
 
     def get_player_position(self, player_id):
         return self.players_positions[player_id]
@@ -117,7 +123,7 @@ class Game:
         self.players[player_id].set_money(self.players[player_id].get_money() - self.fields[field_id].get_buy_price())
         self.fields[field_id].set_owner(player_id)
         if self.check_street_ownership(player_id, self.fields[field_id].get_street_id()):
-            self.upgrade_street(self.fields[field_id].get_street_id())        
+            self.upgrade_street(self.fields[field_id].get_street_id())
         return True
 
     def check_street_ownership(self, player_id, street_id):
@@ -210,7 +216,7 @@ class Game:
 
         self.players[customer_id].set_money(self.players[customer_id].get_money() - rent)
         self.players[owner_id].set_money(self.players[owner_id].get_money() + rent)
-        self.completed_actions["pay"] = 1
+        self.completed_actions["pay"] = True
         return True
 
     def set_player_inactive(self, player_id):
@@ -241,18 +247,23 @@ class Game:
         for player_id in player_ids:
             if player_id not in self.players:
                 raise Exception(f"Player {player_id} not exists.\n")
-        for field_id in field_ids:            
-            if field_id not in self.field_ids:
+        for field_id in field_ids:
+            if field_id not in self.fields:
                 raise Exception(f"Field {field_id} not exists.\n")
         return True
 
     def get_active_player_id(self):
-        return self.players_order[self.active_player]
+        return self.players_order[self.active_player_pos]
 
     async def update_actions(self, player_id):
-        self.actions = {"buy": self.check_action_buy(player_id), "end_turn": self.check_action_end_turn(player_id),
-                        "roll": self.check_action_roll(player_id), "sell": self.check_action_sell(player_id),
-                        "pay": self.check_action_pay(player_id), "upgrade": self.check_action_upgrade(player_id)}
+        self.actions = {}
+        self.actions["buy"] = self.check_action_buy(player_id)
+        self.actions["end_turn"] = self.check_action_end_turn(player_id)
+        self.actions["roll"] = self.check_action_roll(player_id)
+        self.actions["sell"] = self.check_action_sell(player_id)
+        self.actions["pay"] = self.check_action_pay(player_id)
+        self.actions["upgrade"] = self.check_action_upgrade(player_id)
+        self.actions["surrender"] = self.check_action_surrender(player_id)
 
     async def send_game_state(self):   
         if not self.is_started:
@@ -291,7 +302,7 @@ class Game:
         return True
 
     def check_action_end_turn(self, player_id):
-        if self.active_player != player_id:
+        if self.active_player_pos != player_id:
             return False
         return True
 
@@ -340,26 +351,54 @@ class Game:
             return False
         return True
 
+
+    def check_if_need_to_pay(self, player_id):
+        if self.fields[self.players_positions[player_id]].get_owner() is None:
+            return False
+        if self.fields[self.players_positions[player_id]].get_owner() == player_id:
+            return False
+        if self.completed_actions["pay"]:
+            return False
+        return True
+
     def check_action_roll(self, player_id):
+        if self.active_player_pos != player_id:
+            return False
+        if self.check_if_need_to_pay(player_id):
+            return False
         if self.completed_actions.get("roll", 0) == 1:
+            if self.last_rolls[0] != self.last_rolls[1]:
+                return False
+            if self.active_player_counter >= 3:
+                return False
+        return True
+
+    def check_action_surrender(self, player_id):
+        if self.players_order[self.active_player_pos] != player_id:
+            return False
+        if self.check_if_need_to_pay(player_id):
             return False
         return True
 
     def get_possible_actions(self, player_id):
-        if self.active_player != player_id:
+        if self.get_active_player_id() != player_id:
             return []
         return self.actions_list
 
     def surrender(self, player_id):
-        # TODO
-        return False
+        if player_id != self.get_active_player_id():
+            return False
+        self.recursive_sell_all(player_id)
+        self.players[player_id].set_money(0)
+        self.set_player_inactive(player_id)
+        return True
 
     def buy(self, player_id):
         if player_id != self.get_active_player_id():
             return False
         return self.buy_field(player_id, self.players_positions[player_id])
 
-    def end_turn(self, player_id):        
+    def end_turn(self, player_id):
         if player_id != self.get_active_player_id():
             return False
         return self.end_cur_turn(player_id)
@@ -367,19 +406,23 @@ class Game:
     def roll(self, player_id):
         if player_id != self.get_active_player_id():
             return False
+        if not self.check_action_roll(player_id):
+            return False
         dice1 = self.roll_dice()
         dice2 = self.roll_dice()
         self.last_rolls = [dice1, dice2]
+        self.completed_actions["roll"] += 1
         previous_position = self.players_positions[player_id]
         result = self.update_position(player_id, dice1, dice2)
         if result and previous_position + dice1 + dice2 > len(self.fields):
             self.players[player_id].set_money(self.players[player_id].get_money() + self.bonus_for_circle)
         return True
 
-    def sell(self, player_id, field_id):        
+    def sell(self, player_id, field_id):
         if player_id != self.get_active_player_id():
             return False
-        return self.sell_field(player_id, field_id)        
+        self.sell_field(player_id, field_id)
+        return False
 
     def pay(self, player_id):
         if player_id != self.get_active_player_id():
@@ -416,7 +459,7 @@ class Field:
         self.sell_price = sell_price
         self.house_price = house_price
         self.hotel_price = hotel_price
-        self.fees = fees        
+        self.fees = fees
 
     def get_id(self):
         return self.id

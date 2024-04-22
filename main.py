@@ -78,6 +78,10 @@ async def upgrade(game_id: int, player_id: int, field_id: int):
 async def start_game(game_id: int, player_id: int):
     return await gm.start_game(game_id, player_id)
 
+@app.get("/surrender/{game_id}/{player_id}")
+async def surrender(game_id: int, player_id: int):
+    return await gm.surrender(game_id, player_id)
+
 
 # WebSockets:
 

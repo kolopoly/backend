@@ -408,6 +408,7 @@ class Game:
         self.recursive_sell_all(player_id)
         self.players[player_id].set_money(0)
         self.set_player_inactive(player_id)
+        self.end_turn(player_id)
         return True
 
     def buy(self, player_id):

@@ -47,6 +47,10 @@ async def get_rule(rule_id: int):
 async def get_users(game_id: int):
     return await gm.get_users(game_id)
 
+@app.get("/mortgage_field/{game_id}/{player_id}/{field_id}")
+async def mortgage_field(game_id: int, player_id: int, field_id: int):
+    return await gm.mortgage_field(game_id, player_id, field_id)
+
 @app.get("/pay/{game_id}/{player_id}")
 async def pay(game_id: int, player_id: int):
     return await gm.pay(game_id, player_id)

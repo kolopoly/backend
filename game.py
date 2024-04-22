@@ -454,6 +454,10 @@ class Game:
         if player_id != self.get_active_player_id():
             return False
         return self.upgrade_field(player_id, field_id)
+    
+    def mortgage_field(self, player_id, field_id):
+        # TODO: implement
+        return True
 
 
 class Field:

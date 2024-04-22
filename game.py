@@ -92,6 +92,8 @@ class Game:
         if self.get_active_player_id() != player_id:
             raise Exception("not active player tries to end turn.")
         self.active_player_pos = (self.active_player_pos + 1) % len(self.players_order)
+        while not self.players_still_in_game[self.get_active_player_id()]:
+            self.active_player_pos = (self.active_player_pos + 1) % len(self.players_order)
         self.active_player_counter = 0
         self.clean_all_actions_values()
         self.clean_all_completed_actions_values()
@@ -275,6 +277,7 @@ class Game:
             game_state = {}
             game_state["players"] = {player_id: self.players[player_id].get_id()
                                         for player_id in self.players_order}
+            game_state["players_still_in_game"] = self.players_still_in_game
             game_state["players_positions"] = self.players_positions
             game_state["players_money"] = {player_id: self.players[player_id].get_money()
                                         for player_id in self.players_order}
@@ -285,7 +288,7 @@ class Game:
             game_state["last_rolls"] = self.last_rolls
             game_state["active_player"] = self.get_active_player_id()
             game_state["actions"] = self.actions
-            game_state["game_over"] = self.players_still_in_game.count(True) == 1
+            game_state["game_over"] = self.players_still_in_game.count(True) <= 1
 
         msg = json.dumps(game_state)
 

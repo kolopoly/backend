@@ -371,7 +371,6 @@ class Game:
             return False
         return True
 
-
     def check_if_need_to_pay(self, player_id):
         if self.fields[self.players_positions[player_id]].get_owner() is None:
             return False
@@ -384,7 +383,7 @@ class Game:
     def check_action_roll(self, player_id):
         if self.get_active_player_id() != player_id:
             return False
-        if self.check_if_need_to_pay(player_id):
+        if not self.check_if_need_to_pay(player_id):
             return False
         if self.completed_actions.get("roll", 0) == 1:
             if self.last_rolls[0] != self.last_rolls[1]:

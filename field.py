@@ -1,26 +1,23 @@
 class Field:
-    id = None
-    name = None
-    street_id = None
-    owner = None
 
-    buy_price = None
-    sell_price = None
-    house_price = None
-    hotel_price = None
-
-    fees = []
-    field_level = 0
-
-    def __init__(self, id, name, street_id, buy_price, sell_price, house_price, hotel_price, fees):
+    def __init__(self, id, rule):
+        self.type = rule["type"]
+        self.color = rule["color"]
         self.id = id
-        self.name = name
-        self.street_id = street_id
-        self.buy_price = buy_price
-        self.sell_price = sell_price
-        self.house_price = house_price
-        self.hotel_price = hotel_price
-        self.fees = fees
+        self.name = rule["name"]
+        self.owner = None
+        self.field_level = 0
+        if self.type == 'street':
+            self.buy_price = rule["buy_price"]
+            self.mortgage_price = int(rule["buy_price"] * 0.7)
+            self.buy_back_price = int(self.mortgage_price * 1.1)
+            self.house_price = rule["upgrade_price"]
+            self.fees = rule["fees"]
+
+        elif self.type == "start":
+            self.add_to_balance = rule["add_to_balance"]
+        elif self.type == "prison":
+            self.escape_price = rule["escape_price"]
 
     def get_id(self):
         return self.id
@@ -38,16 +35,22 @@ class Field:
         return self.buy_price
 
     def get_sell_price(self):
-        return self.sell_price
+        return self.house_price
+
+    def get_type(self):
+        return self.type
+
+    def get_mortgage_price(self):
+        return self.house_price
+
+    def get_buy_back_price(self):
+        return self.buy_back_price
 
     def get_house_price(self):
         return self.house_price
 
-    def get_hotel_price(self):
-        return self.hotel_price
-
-    def get_street_id(self):
-        return self.street_id
+    def get_color(self):
+        return self.color
 
     def upgrade_by_building(self, money):
         if self.field_level == 0 or self.field_level == len(self.fees):
@@ -65,7 +68,7 @@ class Field:
 
     def downgrade(self):
         if self.field_level == 0:
-            return False, self.sell_price
+            return False, self.house_price
         self.field_level -= 1
         return True, self.house_price
 

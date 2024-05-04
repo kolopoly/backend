@@ -3,6 +3,10 @@ import json
 from field import Field
 
 
+def roll_dice():
+    return random.randint(1, 6)
+
+
 class Game:
 
     def __init__(self, game_id, host_id, rules_json):
@@ -22,8 +26,8 @@ class Game:
         self.actions = {}
         self.completed_actions = {}
         self.actions_list = ["end_turn", "surrender", "pay"]
-        self.bonus_for_circle = 100          
-        self.fields = self.parse_input_rules_json(rules_json)  
+        self.bonus_for_circle = 100
+        self.fields = self.parse_input_rules_json(rules_json)
 
     def parse_input_rules_json(self, json_data):
         fields_data = json_data.get('fields', [])
@@ -31,14 +35,8 @@ class Game:
         counter = 0
         for field_data in fields_data:
             field = Field(
-                counter,
-                field_data['name'],
-                field_data['street_id'],
-                field_data.get('buy_price', 0),
-                field_data.get('sell_price', 0),
-                field_data.get('upgrade_price', 0),
-                field_data.get('upgrade_price', 0),
-                field_data.get('fees', [0])
+                id=counter,
+                rule=field_data
             )
             fields.append(field)
             self.field_ids.append(counter)
@@ -55,11 +53,11 @@ class Game:
             res.append(self.players.get(player).get_id())
         return res
 
-    def start_game(self, player_id):                
+    def start_game(self, player_id):
         if player_id != self.host_id:
             return False
         if self.is_started:
-            return False        
+            return False
         self.players_order = list(self.players.keys())
         random.shuffle(self.players_order)
         for player_id in self.players_order:
@@ -69,23 +67,20 @@ class Game:
         self.last_rolls = [1, 1]
         for player in self.players:
             self.players_still_in_game[player] = True
-        self.clean_all_completed_actions_values()        
+        self.clean_all_completed_actions_values()
         return True
-
-    def roll_dice(self):
-        return random.randint(1, 6)
 
     def update_position(self, player_id, dice1, dice2):
         self.check_ids([player_id], [])
         self.round += 1
         self.active_player_counter += 1
         if self.active_player_counter == 3:
-            #TODO: go to jail
+            # TODO: go to jail
             self.players_positions[player_id] = 0
         else:
             self.players_positions[player_id] = (self.players_positions[player_id] + dice1 + dice2) % len(self.fields)
-            #TODO: check if player passed start
-            #TODO: check if player landed on field with owner
+            # TODO: check if player passed start
+            # TODO: check if player landed on field with owner
         return True
 
     def end_cur_turn(self, player_id):
@@ -105,13 +100,8 @@ class Game:
             self.actions[key] = 0
 
     def clean_all_completed_actions_values(self):
-        self.completed_actions = {}
-        self.completed_actions["buy"] = 0
-        self.completed_actions["end_turn"] = 0
-        self.completed_actions["roll"] = 0
-        self.completed_actions["pay"] = False
+        self.completed_actions = {"buy": 0, "end_turn": 0, "roll": 0, "pay": False}
         # self.actions["upgrade"] = []
-
 
     def get_player_position(self, player_id):
         return self.players_positions[player_id]
@@ -124,45 +114,45 @@ class Game:
             return False
         self.players[player_id].set_money(self.players[player_id].get_money() - self.fields[field_id].get_buy_price())
         self.fields[field_id].set_owner(player_id)
-        if self.check_street_ownership(player_id, self.fields[field_id].get_street_id()):
-            self.upgrade_street(self.fields[field_id].get_street_id())
+        if self.check_street_ownership(player_id, self.fields[field_id].get_color()):
+            self.upgrade_street(self.fields[field_id].get_color())
         return True
 
     def check_street_ownership(self, player_id, street_id):
         for field in self.fields:
-            if field.get_street_id() == street_id and field.get_owner() != player_id:
+            if field.get_color() == street_id and field.get_owner() != player_id:
                 return False
         return True
 
     def upgrade_street(self, street_id):
         for field in self.fields:
-            if field.get_street_id() == street_id:
+            if field.get_color() == street_id:
                 field.upgrade_by_street()
 
     def downgrade_street(self, street_id):
         for field in self.fields:
-            if field.get_street_id() == street_id:
+            if field.get_color() == street_id:
                 field.downgrade_by_street()
 
     def sell_field(self, player_id, field_id):
         self.check_ids([player_id], [field_id])
         if self.fields[field_id].get_owner() != player_id:
             return False
-        if self.get_max_field_level(self.fields[field_id].get_street_id()) > self.fields[field_id].get_field_level():
+        if self.get_max_field_level(self.fields[field_id].get_color()) > self.fields[field_id].get_field_level():
             return False
-        street_ownership = self.check_street_ownership(player_id, self.fields[field_id].get_street_id())
+        street_ownership = self.check_street_ownership(player_id, self.fields[field_id].get_color())
         keep_ownership, money = self.fields[field_id].downgrade()
         if not keep_ownership:
             self.fields[field_id].set_owner(None)
         self.players[player_id].set_money(self.players[player_id].get_money() + money)
         if street_ownership and not keep_ownership:
-            self.downgrade_street(self.fields[field_id].get_street_id())
+            self.downgrade_street(self.fields[field_id].get_color())
         return True
 
     def get_max_field_level(self, street_id):
         max_level = 0
         for field in self.fields:
-            if field.get_street_id() == street_id and field.get_field_level() > max_level:
+            if field.get_color() == street_id and field.get_field_level() > max_level:
                 max_level = field.get_field_level()
         return max_level
 
@@ -188,7 +178,7 @@ class Game:
         if player_id != self.fields[field_id].get_owner():
             return False
         for field in self.fields:
-            if field.get_street_id() == self.fields[field_id].get_street_id() and field.get_owner() != player_id:
+            if field.get_color() == self.fields[field_id].get_color() and field.get_owner() != player_id:
                 return False
         result, money = self.fields[field_id].upgrade_by_building(self.players[player_id].get_money())
         if not result:
@@ -259,36 +249,27 @@ class Game:
         return self.players_order[self.active_player_pos]
 
     async def update_actions(self, player_id):
-        self.actions = {}
-        self.actions["buy"] = self.check_action_buy(player_id)
-        self.actions["end_turn"] = self.check_action_end_turn(player_id)
-        self.actions["roll"] = self.check_action_roll(player_id)
-        self.actions["sell"] = self.check_action_sell(player_id)
-        self.actions["pay"] = self.check_action_pay(player_id)
-        self.actions["upgrade"] = self.check_action_upgrade(player_id)
-        self.actions["surrender"] = self.check_action_surrender(player_id)
+        self.actions = {"buy": self.check_action_buy(player_id), "end_turn": self.check_action_end_turn(player_id),
+                        "roll": self.check_action_roll(player_id), "sell": self.check_action_sell(player_id),
+                        "pay": self.check_action_pay(player_id), "upgrade": self.check_action_upgrade(player_id),
+                        "surrender": self.check_action_surrender(player_id)}
 
-    async def send_game_state(self):   
+    async def send_game_state(self):
         if not self.is_started:
-            game_state = {}
-            game_state["players"] = {player_id: self.players[player_id].get_id()
-                                        for player_id in self.players}        
+            game_state = {"players": {player_id: self.players[player_id].get_id()
+                                      for player_id in self.players}}
         else:
             await self.update_actions(self.get_active_player_id())
-            game_state = {}
-            game_state["players"] = {player_id: self.players[player_id].get_id()
-                                        for player_id in self.players_order}
-            game_state["players_still_in_game"] = self.players_still_in_game
-            game_state["players_positions"] = self.players_positions
-            game_state["players_money"] = {player_id: self.players[player_id].get_money()
-                                        for player_id in self.players_order}
-            game_state["fields_owners_with_levels"] = {field.get_id(): (field.get_owner(), field.get_field_level())
-                                                    for field in self.fields}
-            game_state["round"] = self.round
-            game_state["last_rolls"] = self.last_rolls
-            game_state["active_player"] = self.get_active_player_id()
-            game_state["actions"] = self.actions
-            game_state["game_over"] = (self.get_number_of_players_still_in_game() <= 1)
+            game_state = {"players": {player_id: self.players[player_id].get_id()
+                                      for player_id in self.players_order},
+                          "players_still_in_game": self.players_still_in_game,
+                          "players_positions": self.players_positions,
+                          "players_money": {player_id: self.players[player_id].get_money()
+                                            for player_id in self.players_order},
+                          "fields_owners_with_levels": {field.get_id(): (field.get_owner(), field.get_field_level())
+                                                        for field in self.fields}, "round": self.round,
+                          "last_rolls": self.last_rolls, "active_player": self.get_active_player_id(),
+                          "actions": self.actions, "game_over": (self.get_number_of_players_still_in_game() <= 1)}
 
         msg = json.dumps(game_state)
 
@@ -305,18 +286,19 @@ class Game:
     def check_action_buy(self, player_id):
         if self.fields[self.players_positions[player_id]].get_owner() is not None:
             return False
+        if self.fields[self.players_positions[player_id]].get_type() != "street":
+            return False
         if self.players[player_id].get_money() < self.fields[self.players_positions[player_id]].get_buy_price():
             return False
         if self.active_player_counter == 0:
             return False
-        if self.players_positions[player_id] == 0:
-            return False
+
         return True
 
     def check_action_end_turn(self, player_id):
         if self.get_active_player_id() != player_id:
             return False
-        if self.active_player_counter == 0: 
+        if self.active_player_counter == 0:
             return False
         # if self.completed_actions["roll"] == 0:
         #     return False
@@ -337,7 +319,9 @@ class Game:
     def check_action_sell_field(self, player_id, field_id):
         if self.fields[field_id].get_owner() != player_id:
             return False
-        if self.get_max_field_level(self.fields[field_id].get_street_id()) > self.fields[field_id].get_field_level():
+        if self.fields[self.players_positions[player_id]].get_type() != "street":
+            return False
+        if self.get_max_field_level(self.fields[field_id].get_color()) > self.fields[field_id].get_field_level():
             return False
         return True
 
@@ -366,7 +350,7 @@ class Game:
             return False
         if self.fields[field_id].get_field_level() == len(self.fields[field_id].get_fees()) - 1:
             return False
-        if not self.check_street_ownership(player_id, self.fields[field_id].get_street_id()):
+        if not self.check_street_ownership(player_id, self.fields[field_id].get_color()):
             return False
         return True
 
@@ -428,8 +412,8 @@ class Game:
             return False
         if not self.check_action_roll(player_id):
             return False
-        dice1 = self.roll_dice()
-        dice2 = self.roll_dice()
+        dice1 = roll_dice()
+        dice2 = roll_dice()
         self.last_rolls = [dice1, dice2]
         self.completed_actions["roll"] = 1
         self.completed_actions["pay"] = False
@@ -456,7 +440,7 @@ class Game:
         if player_id != self.get_active_player_id():
             return False
         return self.upgrade_field(player_id, field_id)
-    
+
     def mortgage_field(self, player_id, field_id):
         # TODO: implement
         return True

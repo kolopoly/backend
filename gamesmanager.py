@@ -1,12 +1,12 @@
 import json
 
-from fastapi import FastAPI, WebSocket
+from fastapi import WebSocket
 from game import Game
 from player import Player
 import random
 
 
-class Games_manager:
+class GamesManager:
     games = {}
 
     def is_game_consist(self, game_id: int):
@@ -18,9 +18,9 @@ class Games_manager:
             x = random.randint(1000, 9999)
         return x
 
-    def create_game(self, user_id: int):
+    def create_game(self, user_id: int, rule_id=1):
 
-        with open("test.json") as f:
+        with open(f"./rules/{rule_id}.json") as f:
             x = f.read()
             x = json.loads(x)
             game_id = self.generate_random_id()
@@ -28,13 +28,13 @@ class Games_manager:
             self.games[game_id] = game
             return game_id
 
-    async def connect_to_game(self, game_id: int, user_id: int, ws: WebSocket):        
+    async def connect_to_game(self, game_id: int, user_id: int, ws: WebSocket):
 
         if not self.is_game_consist(game_id):
             return False
-        if (self.games[game_id].add_player(Player(user_id, ws))):
+        if self.games[game_id].add_player(Player(user_id, ws)):
             print(f"User {user_id} connected to game {game_id}")
-            await self.games[game_id].send_game_state()        
+            await self.games[game_id].send_game_state()
             return True
         return False
 
@@ -70,7 +70,7 @@ class Games_manager:
         res = self.games[game_id].sell(player_id, field_id)
         await self.games[game_id].send_game_state()
         return res
-    
+
     async def surrender(self, game_id: int, player_id: int):
         if not self.is_game_consist(game_id):
             return False
@@ -91,14 +91,14 @@ class Games_manager:
         res = self.games[game_id].upgrade(player_id, field_id)
         await self.games[game_id].send_game_state()
         return res
-    
+
     async def start_game(self, game_id: int, player_id: int):
         if not self.is_game_consist(game_id):
             return False
         res = self.games[game_id].start_game(player_id)
         await self.games[game_id].send_game_state()
         return res
-    
+
     async def mortgage_field(self, game_id: int, player_id: int, field_id: int):
         if not self.is_game_consist(game_id):
             return False

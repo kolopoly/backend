@@ -11,7 +11,6 @@ class Player:
         self.ws = ws
         self.player_money = player_money
 
-
     def get_id(self):
         return self.player_id
 
@@ -23,6 +22,6 @@ class Player:
 
     def set_money(self, money):
         self.player_money = money
-    
-    async def send_json_message(self, msg):               
+
+    async def send_json_message(self, msg):
         await self.ws.send_text(msg)

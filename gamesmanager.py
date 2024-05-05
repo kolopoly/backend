@@ -74,7 +74,7 @@ class GamesManager:
     async def surrender(self, game_id: int, player_id: int):
         if not self.is_game_consist(game_id):
             return False
-        res = self.games[game_id].surrender(player_id)
+        res = self.games[game_id].surrender(player_id)        
         await self.games[game_id].send_game_state()
         return res
 
@@ -84,6 +84,13 @@ class GamesManager:
         res = self.games[game_id].pay(player_id)
         await self.games[game_id].send_game_state()
         return res
+
+    # async def pay_prison(self, game_id: int, player_id: int):
+    #     if not self.is_game_consist(game_id):
+    #         return False
+    #     res = self.games[game_id].pay_prison(player_id)
+    #     await self.games[game_id].send_game_state()
+    #     return res
 
     async def upgrade(self, game_id: int, player_id: int, field_id: int):
         if not self.is_game_consist(game_id):

@@ -18,6 +18,10 @@ class Field:
             self.add_to_balance = rule["add_to_balance"]
         elif self.type == "prison":
             self.escape_price = rule["escape_price"]
+        self.is_mortgaged = False
+    
+    def get_escape_price(self):
+        return self.escape_price
 
     def get_id(self):
         return self.id
@@ -89,3 +93,10 @@ class Field:
 
     def get_price(self):
         return self.buy_price
+    
+    def is_mortgaged(self):
+        return self.is_mortgaged
+    
+    def mortgage(self):
+        self.is_mortgaged = True
+        return self.sell_price // 2

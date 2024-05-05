@@ -284,6 +284,8 @@ class Game:
         return counter
 
     def check_action_buy(self, player_id):
+        if self.players[player_id].is_must_pay():
+            return False
         if self.fields[self.players_positions[player_id]].get_owner() is not None:
             return False
         if self.fields[self.players_positions[player_id]].get_type() != "street":
@@ -296,6 +298,8 @@ class Game:
         return True
 
     def check_action_end_turn(self, player_id):
+        if self.players[player_id].is_must_pay():
+            return False        
         if self.get_active_player_id() != player_id:
             return False
         if self.active_player_counter == 0:
@@ -326,6 +330,8 @@ class Game:
         return True
 
     def check_action_pay(self, player_id):
+        if self.players[player_id].is_must_pay():
+            return True            
         if self.fields[self.players_positions[player_id]].get_owner() is None:
             return False
         if self.fields[self.players_positions[player_id]].get_owner() == player_id:
@@ -355,6 +361,8 @@ class Game:
         return True
 
     def check_if_need_to_pay(self, player_id):
+        if self.players[player_id].is_must_pay():
+            return True
         if self.fields[self.players_positions[player_id]].get_owner() is None:
             return False
         if self.fields[self.players_positions[player_id]].get_owner() == player_id:
@@ -388,7 +396,7 @@ class Game:
             return []
         return self.actions_list
 
-    def surrender(self, player_id):
+    def surrender(self, player_id):        
         if player_id != self.get_active_player_id():
             return False
         self.recursive_sell_all(player_id)
@@ -418,6 +426,14 @@ class Game:
         self.completed_actions["roll"] = 1
         self.completed_actions["pay"] = False
         previous_position = self.players_positions[player_id]
+        if self.players[player_id].is_in_prison():
+            if dice1 == dice2:
+                self.players[player_id].change_prison_state()                
+            else:
+                self.players[player_id].number_of_turns_in_prison += 1
+                if self.players[player_id].number_of_turns_in_prison == 3:
+                    self.players[player_id].set_must_pay(True)
+                return True            
         result = self.update_position(player_id, dice1, dice2)
         if result and previous_position + dice1 + dice2 > len(self.fields):
             self.players[player_id].set_money(self.players[player_id].get_money() + self.bonus_for_circle)
@@ -429,12 +445,29 @@ class Game:
         self.sell_field(player_id, field_id)
         return False
 
+    def get_field_by_player_id(self, player_id):
+        return self.fields[self.players_positions[player_id]]
+
     def pay(self, player_id):
         if player_id != self.get_active_player_id():
             return False
+        if self.players[player_id].is_in_prison():
+            return self.pay_prison(player_id)
         return self.pay_rent(player_id,
                              self.fields[self.players_positions[player_id]].get_owner(),
                              self.players_positions[player_id])
+    
+    def pay_prison(self, player_id):
+        if player_id != self.get_active_player_id():
+            return False
+        if not self.players[player_id].is_in_prison():
+            return False        
+        cost = self.get_field_by_player_id(player_id).get_escape_price()
+        if self.players[player_id].get_money() < cost:
+            return False
+        self.players[player_id].set_money(self.players[player_id].get_money() - cost)
+        self.players[player_id].change_prison_state()
+        return True
 
     def upgrade(self, player_id, field_id):
         if player_id != self.get_active_player_id():
@@ -442,5 +475,11 @@ class Game:
         return self.upgrade_field(player_id, field_id)
 
     def mortgage_field(self, player_id, field_id):
-        # TODO: implement
+        if player_id != self.get_active_player_id():
+            return False
+        if self.fields[field_id].get_owner() != player_id:
+            return False
+        if self.fields[field_id].get_field_level() > 0:
+            return False
+        
         return True

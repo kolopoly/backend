@@ -80,6 +80,10 @@ async def mortgage_field(game_id: int, player_id: int, field_id: int):
 async def pay(game_id: int, player_id: int):
     return await gm.pay(game_id, player_id)
 
+# @app.get("/pay_prison/{game_id}/{player_id}")
+# async def pay_prison(game_id: int, player_id: int):
+#     return await gm.pay_prison(game_id, player_id)
+
 
 @app.get("/roll/{game_id}/{player_id}")
 async def roll(game_id: int, player_id: int):
@@ -97,7 +101,7 @@ async def start_game(game_id: int, player_id: int):
 
 
 @app.get("/surrender/{game_id}/{player_id}")
-async def surrender(game_id: int, player_id: int):
+async def surrender(game_id: int, player_id: int):    
     return await gm.surrender(game_id, player_id)
 
 

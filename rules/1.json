@@ -5,17 +5,15 @@
 
   "fields": [
      {
-      "name": "Start",
-      "street_id": -1,
-      "add_to_balance": 50,
-       "fees": [],
-       "sell_price": 0,
-      "buy_price": 0,
-      "upgrade_price": 0
+       "name": "Start",
+       "type": "start",
+       "color": "purple",
+       "add_to_balance": 50
      },
      {
       "name": "H&M",
-      "street_id": 1,
+       "type": "street",
+      "color": "red",
       "fees": [
         2,
         4,
@@ -25,13 +23,13 @@
         30,
         50
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "Lacoste",
-      "street_id": 1,
+      "color": "red",
+       "type": "street",
       "fees": [
         3,
         5,
@@ -41,13 +39,13 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "Zara",
-      "street_id": 1,
+      "color": "red",
+       "type": "street",
       "fees": [
         3,
         5,
@@ -57,13 +55,13 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "H&M",
-      "street_id": 2,
+      "color": "green",
+       "type": "street",
       "fees": [
         2,
         4,
@@ -73,13 +71,13 @@
         30,
         50
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "Lacoste",
-      "street_id": 2,
+      "color": "green",
+       "type": "street",
       "fees": [
         3,
         5,
@@ -89,13 +87,13 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "Zara",
-      "street_id": 2,
+      "color": "green",
+       "type": "street",
       "fees": [
         3,
         5,
@@ -105,13 +103,13 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "H&M",
-      "street_id": 3,
+      "color": "blue",
+       "type": "street",
       "fees": [
         2,
         4,
@@ -121,13 +119,13 @@
         30,
         50
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "Lacoste",
-      "street_id": 3,
+      "color": "blue",
+       "type": "street",
       "fees": [
         3,
         5,
@@ -137,13 +135,13 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "Zara",
-      "street_id": 3,
+      "color": "blue",
+       "type": "street",
       "fees": [
         3,
         5,
@@ -153,13 +151,13 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "H&M",
-      "street_id": 4,
+      "color": "orange",
+       "type": "street",
       "fees": [
         2,
         4,
@@ -169,13 +167,13 @@
         30,
         50
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "Lacoste",
-      "street_id": 4,
+       "type": "street",
+      "color": "orange",
       "fees": [
         3,
         5,
@@ -185,13 +183,13 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "Zara",
-      "street_id": 4,
+       "type": "street",
+      "color": "orange",
       "fees": [
         3,
         5,
@@ -201,13 +199,13 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "H&M",
-      "street_id": 5,
+       "type": "street",
+      "color": "grey",
       "fees": [
         2,
         4,
@@ -217,13 +215,14 @@
         30,
         50
       ],
-      "sell_price": 50,
       "buy_price": 70,
+       "type": "street",
       "upgrade_price": 30
     },
     {
       "name": "Lacoste",
-      "street_id": 5,
+       "type": "street",
+      "color": "grey",
       "fees": [
         3,
         5,
@@ -233,13 +232,13 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     },
     {
       "name": "Zara",
-      "street_id": 5,
+       "type": "street",
+      "color": "grey",
       "fees": [
         3,
         5,
@@ -249,26 +248,8 @@
         33,
         57
       ],
-      "sell_price": 50,
       "buy_price": 70,
       "upgrade_price": 30
     }
-  ],
-  "streets": {
-    "1": {
-      "color": "red"
-    },
-    "2": {
-      "color": "green"
-    },
-    "3": {
-      "color": "blue"
-    },
-    "4": {
-      "color": "orange"
-    },
-    "5": {
-      "color": "grey"
-    }
-  }
+  ]
 }

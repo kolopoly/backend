@@ -122,5 +122,3 @@ async def websocket_endpoint(ws: WebSocket, user_id: int, game_id: int):
 
         await ws.send_text(f"Message text was: {data}")
 
-
-uvicorn.run(app, host="localhost", port=8000)

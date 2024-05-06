@@ -1,0 +1,25 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Auth with credentials
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_UPLOAD_BUCKET_CRED }}
+
+      - name: Build and push Docker image
+        run: |
+            docker build -t us-docker.pkg.dev/810568366540/backend/my-image:latest .
+            docker push us-docker.pkg.dev/810568366540/backend/my-image:latest

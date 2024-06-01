@@ -26,6 +26,9 @@ class Player:
     def set_money(self, money):
         self.player_money = money
         
+    def add_money(self, money):
+        self.player_money += money
+        
     def is_in_prison(self):
         return self.in_prison
     

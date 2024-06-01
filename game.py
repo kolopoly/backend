@@ -156,21 +156,26 @@ class Game:
                 max_level = field.get_field_level()
         return max_level
 
-    def contract_trade_fields(self, player1_id, player2_id, fields_ids, money):
+    def contract_trade_fields(self, player1_id, player2_id, fields_ids, money1, money2):
         self.check_ids([player1_id, player2_id], fields_ids)
         for field_id in fields_ids:
             if self.fields[field_id].get_owner() != player1_id:
                 return False
-            if self.fields[field_id].get_owner() == player2_id:
+            if self.fields[field_id].get_owner() != player2_id:
                 return False
             if self.fields[field_id].get_field_level() > 1:
                 return False
-        if self.players[player2_id].get_money() < money:
+        if self.players[player1_id].get_money() < money1:
             return False
+        if self.players[player2_id].get_money() < money2:
+            return False        
         for field_id in fields_ids:
-            self.fields[field_id].set_owner(player2_id)
-        self.players[player2_id].set_money(self.players[player2_id].get_money() - money)
-        self.players[player1_id].set_money(self.players[player1_id].get_money() + money)
+            if self.fields[field_id].get_owner() == player1_id:
+                self.fields[field_id].set_owner(player2_id)
+            else:
+                self.fields[field_id].set_owner(player1_id)
+        self.players[player1_id].add_money(money2 - money1)
+        self.players[player2_id].add_money(money1 - money2)            
         return True
 
     def upgrade_field(self, player_id, field_id):
@@ -483,3 +488,11 @@ class Game:
             return False
         
         return True
+    
+    def trade(self, player_id1, player_id2, money1, money2, fields1, fields2):
+        if player_id1 != self.get_active_player_id():
+            return False
+        fields1_id = [int(x) for x in fields1.split(",")]
+        fields2_id = [int(x) for x in fields2.split(",")]
+        fields_id = fields1_id + fields2_id        
+        return self.contract_trade_fields(player_id1, player_id2, fields_id, money1, money2)

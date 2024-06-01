@@ -489,10 +489,7 @@ class Game:
         
         return True
     
-    def trade(self, player_id1, player_id2, money1, money2, fields1, fields2):
+    def trade(self, player_id1, player_id2, money1, money2, fields):
         if player_id1 != self.get_active_player_id():
-            return False
-        fields1_id = [int(x) for x in fields1.split(",")]
-        fields2_id = [int(x) for x in fields2.split(",")]
-        fields_id = fields1_id + fields2_id        
-        return self.contract_trade_fields(player_id1, player_id2, fields_id, money1, money2)
+            return False        
+        return self.contract_trade_fields(player_id1, player_id2, fields, money1, money2)

@@ -104,9 +104,16 @@ async def start_game(game_id: int, player_id: int):
 async def surrender(game_id: int, player_id: int):    
     return await gm.surrender(game_id, player_id)
 
-@app.get("/trade/{game_id}/{player_id1}/{player_id2}/{money1}/{money2}/{fields1}/{fields2}")
-async def trade(game_id: int, player_id1: int, player_id2: int, money1: int, money2: int, fields1: str, fields2: str):
-    return await gm.trade(game_id, player_id1, player_id2, money1, money2, fields1, fields2)
+@app.post("/trade")
+async def trade(playload: dict):
+    return await gm.trade (
+        playload['game_id'], 
+        playload['player_id1'], 
+        playload['player_id2'], 
+        playload['money1'], 
+        playload['money2'], 
+        playload['fields']
+    )
 
 @app.get("/upgrade/{game_id}/{player_id}/{field_id}")
 async def upgrade(game_id: int, player_id: int, field_id: int):

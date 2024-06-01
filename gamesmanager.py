@@ -113,9 +113,9 @@ class GamesManager:
         await self.games[game_id].send_game_state()
         return res
     
-    async def trade(self, game_id: int, player_id1: int, player_id2: int, money1: int, money2: int, fields1: str, fields2: str):
+    async def trade(self, game_id: int, player_id1: int, player_id2: int, money1: int, money2: int, fields):
         if not self.is_game_consist(game_id):
             return False
-        res = self.games[game_id].trade(player_id1, player_id2, money1, money2, fields1, fields2)
+        res = self.games[game_id].trade(player_id1, player_id2, money1, money2, fields)
         await self.games[game_id].send_game_state()
         return res

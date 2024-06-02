@@ -251,11 +251,11 @@ class Game:
 
     def generate_trade_actions(self):
         return {"buy": False, "end_turn": False,
-                "roll": False, "sell": False,
-                "pay": False, "upgrade": False,
+                "roll": False, "sell": [[False, i] for i in range(len(self.fields))],
+                "pay": False, "upgrade": [[False, i] for i in range(len(self.fields))],
                 "surrender": False, "action_answer_trade": True,
                 "action_trade": False}
-
+    # 3475
     def get_trade(self):
         trade = {}
         if self.active_trade is not None:
@@ -289,7 +289,7 @@ class Game:
                                                         for field in self.fields}, "round": self.round,
                           "last_rolls": self.last_rolls, "active_player": self.get_active_player_id(),
                           "actions": actions, "game_over": (self.get_number_of_players_still_in_game() <= 1),
-                          "trade:": self.get_trade()}
+                          "trade": self.get_trade()}
 
         msg = json.dumps(game_state)
 
@@ -509,9 +509,7 @@ class Game:
             return False
         self.check_ids([player1_id, player2_id], fields_ids)
         for field_id in fields_ids:
-            if self.fields[field_id].get_owner() != player1_id:
-                return False
-            if self.fields[field_id].get_owner() != player2_id:
+            if self.fields[field_id].get_owner() != player1_id and self.fields[field_id].get_owner() != player2_id:
                 return False
             if self.fields[field_id].get_field_level() > 1:
                 return False
@@ -526,12 +524,13 @@ class Game:
         return True
 
     def answer_trade(self, player_id, trade_id, answer):
+        print(player_id, trade_id, answer, self.active_trade.get_trade_id())
         if self.active_trade is None:
-            return False
+            return "self.active_trade is None:"
         if player_id != self.active_trade.get_player_id2():
-            return False
+            return "player_id != self.active_trade.get_player_id2():"
         if trade_id != self.active_trade.get_trade_id():
-            return False
+            return "self.active_trade.get_trade_id():"
         if answer:
             self.contract_trade_fields(self.active_trade.get_player_id1(), self.active_trade.get_player_id2(),
                                        self.active_trade.get_fields(), self.active_trade.get_money1(),

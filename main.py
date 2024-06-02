@@ -122,7 +122,7 @@ async def trade(playload: dict):
 
 @app.get("/answer_trade/{game_id}/{player_id}/{trade_id}/{answer}")
 async def answer_trade(game_id: int, player_id: int, trade_id: int, answer: bool):
-    x = await gm.answer_trade(game_id, player_id, trade_id, answer)
+    x = await gm.answer_trade(game_id, player_id, str(trade_id), answer)
     print(x)
 
 

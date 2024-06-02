@@ -166,7 +166,6 @@ class Game:
                 self.fields[field_id].set_owner(player1_id)
         self.players[player1_id].add_money(money2 - money1)
         self.players[player2_id].add_money(money1 - money2)            
-        return True
 
     def upgrade_field(self, player_id, field_id):
         self.check_ids([player_id], [field_id])
@@ -247,30 +246,36 @@ class Game:
         self.actions = {"buy": self.check_action_buy(player_id), "end_turn": self.check_action_end_turn(player_id),
                         "roll": self.check_action_roll(player_id), "sell": self.check_action_sell(player_id),
                         "pay": self.check_action_pay(player_id), "upgrade": self.check_action_upgrade(player_id),
-                        "surrender": self.check_action_surrender(player_id)}
-
-    async def send_trade_not(self):
+                        "surrender": self.check_action_surrender(player_id), "action_answer_trade": False}
+    
+    def generate_trade_actions(self):
+        return {"buy": False, "end_turn": False,
+                        "roll": False, "sell": False,
+                        "pay": False, "upgrade": False,
+                        "surrender": False, "action_answer_trade": True}
+    def get_trade(self):
         trade = {}
-        trade["player_id1"] = self.active_trade.get_player_id1()
-        trade["player_id2"] = self.active_trade.get_player_id2()
-        trade["money1"] = self.active_trade.get_money1()
-        trade["money2"] = self.active_trade.get_money2()
-        trade["fields"] = self.active_trade.get_fields()
-        trade["trade_id"] = self.active_trade.get_trade_id()
-        
-        msg = json.dumps({"trade": trade})
-        await self.players[self.active_trade.get_player_id2()].send_json_message(msg)
-        
+        if self.active_trade is not None:            
+            trade["player_id1"] = self.active_trade.get_player_id1()
+            trade["player_id2"] = self.active_trade.get_player_id2()
+            trade["money1"] = self.active_trade.get_money1()
+            trade["money2"] = self.active_trade.get_money2()
+            trade["fields"] = self.active_trade.get_fields()
+            trade["trade_id"] = self.active_trade.get_trade_id()
+            
+        return trade
 
     async def send_game_state(self):
         if not self.is_started:
             game_state = {"players": {player_id: self.players[player_id].get_id()
                                       for player_id in self.players}}
-        else:
-            if self.active_trade is not None:
-                await self.send_trade_not()
-                return 
-            await self.update_actions(self.get_active_player_id())
+        else:            
+            if self.active_trade is None:
+                await self.update_actions(self.get_active_player_id())            
+                actions = self.actions
+            else:
+                actions = self.generate_trade_actions()
+                
             game_state = {"players": {player_id: self.players[player_id].get_id()
                                       for player_id in self.players_order},
                           "players_still_in_game": self.players_still_in_game,
@@ -280,7 +285,8 @@ class Game:
                           "fields_owners_with_levels": {field.get_id(): (field.get_owner(), field.get_field_level())
                                                         for field in self.fields}, "round": self.round,
                           "last_rolls": self.last_rolls, "active_player": self.get_active_player_id(),
-                          "actions": self.actions, "game_over": (self.get_number_of_players_still_in_game() <= 1)}
+                          "actions": actions, "game_over": (self.get_number_of_players_still_in_game() <= 1),
+                          "trade:": self.get_trade()}
 
         msg = json.dumps(game_state)
 
@@ -512,6 +518,8 @@ class Game:
             return False    
             
         self.active_trade = Trade(player1_id, player2_id, money1, money2, fields_ids)
+        self.old_active_player_pos = self.active_player_pos
+        self.active_player_pos = self.players_order.index(player2_id)
         return True
 
 
@@ -521,10 +529,11 @@ class Game:
         if player_id != self.active_trade.get_player_id2():
             return False
         if trade_id != self.active_trade.get_trade_id():
-            return False        
+            return False                     
         if answer:
-            return self.contract_trade_fields(self.active_trade.get_player_id1(), self.active_trade.get_player_id2(),
+            self.contract_trade_fields(self.active_trade.get_player_id1(), self.active_trade.get_player_id2(),
                                                 self.active_trade.get_fields(), self.active_trade.get_money1(),
                                                 self.active_trade.get_money2())
         self.active_trade = None
+        self.active_player_pos = self.old_active_player_pos
         return True        

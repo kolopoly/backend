@@ -112,3 +112,17 @@ class GamesManager:
         res = self.games[game_id].mortgage_field(player_id, field_id)
         await self.games[game_id].send_game_state()
         return res
+    
+    async def request_trade(self, game_id: int, player_id1: int, player_id2: int, money1: int, money2: int, fields):
+        if not self.is_game_consist(game_id):
+            return False
+        res = self.games[game_id].request_trade(player_id1, player_id2, money1, money2, fields)
+        await self.games[game_id].send_game_state()
+        return res
+    
+    async def answer_trade(self, game_id: int, player_id: int, trade_id: str, answer: bool):
+        if not self.is_game_consist(game_id):
+            return False
+        res = self.games[game_id].answer_trade(player_id, trade_id, answer)
+        await self.games[game_id].send_game_state()
+        return res

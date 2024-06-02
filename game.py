@@ -246,13 +246,15 @@ class Game:
         self.actions = {"buy": self.check_action_buy(player_id), "end_turn": self.check_action_end_turn(player_id),
                         "roll": self.check_action_roll(player_id), "sell": self.check_action_sell(player_id),
                         "pay": self.check_action_pay(player_id), "upgrade": self.check_action_upgrade(player_id),
-                        "surrender": self.check_action_surrender(player_id), "action_answer_trade": False}
+                        "surrender": self.check_action_surrender(player_id), "action_answer_trade": False,
+                        "action_trade": True}
     
     def generate_trade_actions(self):
         return {"buy": False, "end_turn": False,
                         "roll": False, "sell": False,
                         "pay": False, "upgrade": False,
-                        "surrender": False, "action_answer_trade": True}
+                        "surrender": False, "action_answer_trade": True,
+                        "action_trade": False}
     def get_trade(self):
         trade = {}
         if self.active_trade is not None:            

@@ -1,4 +1,5 @@
 class Field:
+    MORTGAGE_TURNS = 5
 
     def __init__(self, id, rule):
         self.type = rule["type"]
@@ -7,6 +8,7 @@ class Field:
         self.name = rule["name"]
         self.owner = None
         self.field_level = 0
+        self.mortgage_turns_counter = 0
         if self.type == 'street':
             self.buy_price = rule["buy_price"]
             self.mortgage_price = int(rule["buy_price"] * 0.7)
@@ -94,9 +96,34 @@ class Field:
     def get_price(self):
         return self.buy_price
     
-    def is_mortgaged(self):
+    def get_is_mortgaged(self):
         return self.is_mortgaged
     
     def mortgage(self):
         self.is_mortgaged = True
-        return self.sell_price // 2
+        self.start_mortgage_turns_counter()
+        return self.mortgage_price
+
+    def unmortgage(self):
+        self.is_mortgaged = False
+        self.reset_mortgage_turns_counter()
+        return self.buy_back_price
+
+    def start_mortgage_turns_counter(self):
+        self.mortgage_turns_counter = self.MORTGAGE_TURNS
+
+    def reset_mortgage_turns_counter(self):
+        self.mortgage_turns_counter = 0
+
+    def decrease_mortgage_turns_counter(self):
+        self.mortgage_turns_counter -= 1
+        if self.is_mortgage_arrears():
+            self.set_owner_none()
+
+    def set_owner_none(self):
+        self.field_level = 0
+        self.is_mortgaged = False
+        self.set_owner(None)
+
+    def is_mortgage_arrears(self):
+        return self.is_mortgaged and self.mortgage_turns_counter == 0

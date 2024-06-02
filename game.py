@@ -114,13 +114,21 @@ class Game:
             return False
         self.players[player_id].set_money(self.players[player_id].get_money() - self.fields[field_id].get_buy_price())
         self.fields[field_id].set_owner(player_id)
-        if self.check_street_ownership(player_id, self.fields[field_id].get_color()):
+        if self.check_street_ownership_and_mortgage_state(player_id, self.fields[field_id].get_color()):
             self.upgrade_street(self.fields[field_id].get_color())
         return True
 
     def check_street_ownership(self, player_id, street_id):
         for field in self.fields:
             if field.get_color() == street_id and field.get_owner() != player_id:
+                return False
+        return True
+
+    def check_street_ownership_and_mortgage_state(self, player_id, street_id):
+        if not self.check_street_ownership(player_id, street_id):
+            return False
+        for field in self.fields:
+            if field.get_color() == street_id and field.get_is_mortgaged():
                 return False
         return True
 
@@ -138,16 +146,20 @@ class Game:
         self.check_ids([player_id], [field_id])
         if self.fields[field_id].get_owner() != player_id:
             return False
-        if self.get_max_field_level(self.fields[field_id].get_color()) > self.fields[field_id].get_field_level():
+        if self.fields[field_id].get_is_mortgaged():
             return False
         street_ownership = self.check_street_ownership(player_id, self.fields[field_id].get_color())
-        keep_ownership, money = self.fields[field_id].downgrade()
-        if not keep_ownership:
-            self.fields[field_id].set_owner(None)
-        self.players[player_id].set_money(self.players[player_id].get_money() + money)
-        if street_ownership and not keep_ownership:
-            self.downgrade_street(self.fields[field_id].get_color())
-        return True
+        if not street_ownership:
+            return self.mortgage_field(player_id, field_id)
+        else:
+            if self.fields[field_id].get_field_level() <= 1 and \
+                    self.get_max_field_level(self.fields[field_id].get_color()) > self.fields[field_id].get_field_level():
+                return False
+            keep_ownership, money = self.fields[field_id].downgrade()
+            self.players[player_id].set_money(self.players[player_id].get_money() + money)
+            if self.fields[field_id].get_field_level() == 0:
+                self.downgrade_street(self.fields[field_id].get_color())
+            return True
 
     def get_max_field_level(self, street_id):
         max_level = 0
@@ -189,6 +201,14 @@ class Game:
         if not result:
             return False
         self.players[player_id].set_money(money)
+        return True
+
+    def unmortgage_field(self, player_id, field_id):
+        self.check_ids([player_id], [field_id])
+        if not self.check_action_unmortgage(player_id, field_id):
+            return False
+        self.fields[field_id].unmortgage()
+        self.players[player_id].set_money(self.players[player_id].get_money() - self.fields[field_id].get_buy_back_price())
         return True
 
     def pay_rent(self, customer_id, owner_id, field_id):
@@ -299,7 +319,6 @@ class Game:
             return False
         if self.active_player_counter == 0:
             return False
-
         return True
 
     def check_action_end_turn(self, player_id):
@@ -319,7 +338,9 @@ class Game:
     def check_action_sell(self, player_id):
         fields_of_player = []
         for field in self.fields:
-            if field.get_owner() == player_id and self.check_action_sell_field(player_id, field.get_id()):
+            if field.get_owner() == player_id and \
+                    self.check_action_sell_field(player_id, field.get_id()) and \
+                    not field.is_mortgaged:
                 fields_of_player.append([True, field.get_id()])
             else:
                 fields_of_player.append([False, field.get_id()])
@@ -330,13 +351,16 @@ class Game:
             return False
         if self.fields[self.players_positions[player_id]].get_type() != "street":
             return False
-        if self.get_max_field_level(self.fields[field_id].get_color()) > self.fields[field_id].get_field_level():
+        if self.fields[field_id].get_field_level() <= 1 and \
+                self.get_max_field_level(self.fields[field_id].get_color()) > self.fields[field_id].get_field_level():
             return False
         return True
 
     def check_action_pay(self, player_id):
         if self.players[player_id].is_must_pay():
-            return True            
+            return True
+        if self.fields[self.players_positions[player_id]].get_is_mortgaged():
+            return False
         if self.fields[self.players_positions[player_id]].get_owner() is None:
             return False
         if self.fields[self.players_positions[player_id]].get_owner() == player_id:
@@ -348,14 +372,28 @@ class Game:
     def check_action_upgrade(self, player_id):
         fields_of_player = []
         for field in self.fields:
-            if field.get_owner() == player_id and self.check_action_upgrade_field(player_id, field.get_id()):
+            if self.check_action_upgrade_field(player_id, field.get_id()) or \
+                    self.check_action_unmortgage(player_id, field.get_id()):
                 fields_of_player.append([True, field.get_id()])
             else:
                 fields_of_player.append([False, field.get_id()])
         return fields_of_player
 
+    def check_action_unmortgage(self, player_id, field_id):
+        if player_id != self.get_active_player_id():
+            return False
+        if self.fields[field_id].get_owner() != player_id:
+            return False
+        if not self.fields[field_id].get_is_mortgaged():
+            return False
+        if self.players[player_id].get_money() < self.fields[field_id].get_buy_back_price():
+            return False
+        return True
+
     def check_action_upgrade_field(self, player_id, field_id):
         if self.fields[field_id].get_owner() != player_id:
+            return False
+        if self.fields[field_id].get_is_mortgaged():
             return False
         if self.players[player_id].get_money() < self.fields[field_id].get_house_price():
             return False
@@ -365,21 +403,10 @@ class Game:
             return False
         return True
 
-    def check_if_need_to_pay(self, player_id):
-        if self.players[player_id].is_must_pay():
-            return True
-        if self.fields[self.players_positions[player_id]].get_owner() is None:
-            return False
-        if self.fields[self.players_positions[player_id]].get_owner() == player_id:
-            return False
-        if self.completed_actions["pay"]:
-            return False
-        return True
-
     def check_action_roll(self, player_id):
         if self.get_active_player_id() != player_id:
             return False
-        if self.check_if_need_to_pay(player_id):
+        if self.check_action_pay(player_id):
             return False
         if self.completed_actions.get("roll", 0) == 1:
             if self.last_rolls[0] != self.last_rolls[1]:
@@ -392,7 +419,7 @@ class Game:
     def check_action_surrender(self, player_id):
         if self.players_order[self.active_player_pos] != player_id:
             return False
-        if self.check_if_need_to_pay(player_id):
+        if self.check_action_pay(player_id):
             return False
         return True
 
@@ -425,6 +452,12 @@ class Game:
             return False
         if not self.check_action_roll(player_id):
             return False
+        if not self.roll_process(player_id):
+            return False
+        self.update_player_mortgage_counters(player_id)
+        return True
+
+    def roll_process(self, player_id):
         dice1 = roll_dice()
         dice2 = roll_dice()
         self.last_rolls = [dice1, dice2]
@@ -433,12 +466,12 @@ class Game:
         previous_position = self.players_positions[player_id]
         if self.players[player_id].is_in_prison():
             if dice1 == dice2:
-                self.players[player_id].change_prison_state()                
+                self.players[player_id].change_prison_state()
             else:
                 self.players[player_id].number_of_turns_in_prison += 1
                 if self.players[player_id].number_of_turns_in_prison == 3:
                     self.players[player_id].set_must_pay(True)
-                return True            
+                return True
         result = self.update_position(player_id, dice1, dice2)
         if result and previous_position + dice1 + dice2 > len(self.fields):
             self.players[player_id].set_money(self.players[player_id].get_money() + self.bonus_for_circle)
@@ -477,18 +510,32 @@ class Game:
     def upgrade(self, player_id, field_id):
         if player_id != self.get_active_player_id():
             return False
-        return self.upgrade_field(player_id, field_id)
+        if self.fields[field_id].get_is_mortgaged():
+            return self.unmortgage_field(player_id, field_id)
+        else:
+            return self.upgrade_field(player_id, field_id)
 
     def mortgage_field(self, player_id, field_id):
         if player_id != self.get_active_player_id():
             return False
         if self.fields[field_id].get_owner() != player_id:
             return False
-        if self.fields[field_id].get_field_level() > 0:
+        if self.get_max_field_level(self.fields[field_id].get_color()) > 1:
             return False
-        
+        if self.fields[field_id].get_is_mortgaged():
+            return False
+        self.fields[field_id].mortgage()
+        self.players[player_id].set_money(
+            self.players[player_id].get_money()
+            + self.fields[field_id].get_mortgage_price()
+        )
         return True
-    
+
+    def update_player_mortgage_counters(self, player_id):
+        for field in self.fields:
+            if field.get_owner() == player_id and field.get_is_mortgaged():
+                field.decrease_mortgage_turns_counter()
+
     def trade(self, player_id1, player_id2, money1, money2, fields):
         if player_id1 != self.get_active_player_id():
             return False        

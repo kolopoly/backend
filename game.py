@@ -158,14 +158,14 @@ class Game:
                 max_level = field.get_field_level()
         return max_level
 
-    def contract_trade_fields(self, player1_id, player2_id, fields_ids, money1, money2):        
+    def contract_trade_fields(self, player1_id, player2_id, fields_ids, money1, money2):
         for field_id in fields_ids:
             if self.fields[field_id].get_owner() == player1_id:
                 self.fields[field_id].set_owner(player2_id)
             else:
                 self.fields[field_id].set_owner(player1_id)
         self.players[player1_id].add_money(money2 - money1)
-        self.players[player2_id].add_money(money1 - money2)            
+        self.players[player2_id].add_money(money1 - money2)
 
     def upgrade_field(self, player_id, field_id):
         self.check_ids([player_id], [field_id])
@@ -248,36 +248,37 @@ class Game:
                         "pay": self.check_action_pay(player_id), "upgrade": self.check_action_upgrade(player_id),
                         "surrender": self.check_action_surrender(player_id), "action_answer_trade": False,
                         "action_trade": True}
-    
+
     def generate_trade_actions(self):
         return {"buy": False, "end_turn": False,
-                        "roll": False, "sell": False,
-                        "pay": False, "upgrade": False,
-                        "surrender": False, "action_answer_trade": True,
-                        "action_trade": False}
+                "roll": False, "sell": False,
+                "pay": False, "upgrade": False,
+                "surrender": False, "action_answer_trade": True,
+                "action_trade": False}
+
     def get_trade(self):
         trade = {}
-        if self.active_trade is not None:            
+        if self.active_trade is not None:
             trade["player_id1"] = self.active_trade.get_player_id1()
             trade["player_id2"] = self.active_trade.get_player_id2()
             trade["money1"] = self.active_trade.get_money1()
             trade["money2"] = self.active_trade.get_money2()
             trade["fields"] = self.active_trade.get_fields()
             trade["trade_id"] = self.active_trade.get_trade_id()
-            
+
         return trade
 
     async def send_game_state(self):
         if not self.is_started:
             game_state = {"players": {player_id: self.players[player_id].get_id()
                                       for player_id in self.players}}
-        else:            
+        else:
             if self.active_trade is None:
-                await self.update_actions(self.get_active_player_id())            
+                await self.update_actions(self.get_active_player_id())
                 actions = self.actions
             else:
                 actions = self.generate_trade_actions()
-                
+
             game_state = {"players": {player_id: self.players[player_id].get_id()
                                       for player_id in self.players_order},
                           "players_still_in_game": self.players_still_in_game,
@@ -318,7 +319,7 @@ class Game:
 
     def check_action_end_turn(self, player_id):
         if self.players[player_id].is_must_pay():
-            return False        
+            return False
         if self.get_active_player_id() != player_id:
             return False
         if self.active_player_counter == 0:
@@ -350,7 +351,7 @@ class Game:
 
     def check_action_pay(self, player_id):
         if self.players[player_id].is_must_pay():
-            return True            
+            return True
         if self.fields[self.players_positions[player_id]].get_owner() is None:
             return False
         if self.fields[self.players_positions[player_id]].get_owner() == player_id:
@@ -415,7 +416,7 @@ class Game:
             return []
         return self.actions_list
 
-    def surrender(self, player_id):        
+    def surrender(self, player_id):
         if player_id != self.get_active_player_id():
             return False
         self.recursive_sell_all(player_id)
@@ -447,12 +448,12 @@ class Game:
         previous_position = self.players_positions[player_id]
         if self.players[player_id].is_in_prison():
             if dice1 == dice2:
-                self.players[player_id].change_prison_state()                
+                self.players[player_id].change_prison_state()
             else:
                 self.players[player_id].number_of_turns_in_prison += 1
                 if self.players[player_id].number_of_turns_in_prison == 3:
                     self.players[player_id].set_must_pay(True)
-                return True            
+                return True
         result = self.update_position(player_id, dice1, dice2)
         if result and previous_position + dice1 + dice2 > len(self.fields):
             self.players[player_id].set_money(self.players[player_id].get_money() + self.bonus_for_circle)
@@ -475,12 +476,12 @@ class Game:
         return self.pay_rent(player_id,
                              self.fields[self.players_positions[player_id]].get_owner(),
                              self.players_positions[player_id])
-    
+
     def pay_prison(self, player_id):
         if player_id != self.get_active_player_id():
             return False
         if not self.players[player_id].is_in_prison():
-            return False        
+            return False
         cost = self.get_field_by_player_id(player_id).get_escape_price()
         if self.players[player_id].get_money() < cost:
             return False
@@ -500,12 +501,12 @@ class Game:
             return False
         if self.fields[field_id].get_field_level() > 0:
             return False
-        
+
         return True
-    
+
     def request_trade(self, player1_id, player2_id, money1, money2, fields_ids):
         if player1_id != self.get_active_player_id():
-            return False        
+            return False
         self.check_ids([player1_id, player2_id], fields_ids)
         for field_id in fields_ids:
             if self.fields[field_id].get_owner() != player1_id:
@@ -517,13 +518,12 @@ class Game:
         if self.players[player1_id].get_money() < money1:
             return False
         if self.players[player2_id].get_money() < money2:
-            return False    
-            
+            return False
+
         self.active_trade = Trade(player1_id, player2_id, money1, money2, fields_ids)
         self.old_active_player_pos = self.active_player_pos
         self.active_player_pos = self.players_order.index(player2_id)
         return True
-
 
     def answer_trade(self, player_id, trade_id, answer):
         if self.active_trade is None:
@@ -531,11 +531,11 @@ class Game:
         if player_id != self.active_trade.get_player_id2():
             return False
         if trade_id != self.active_trade.get_trade_id():
-            return False                     
+            return False
         if answer:
             self.contract_trade_fields(self.active_trade.get_player_id1(), self.active_trade.get_player_id2(),
-                                                self.active_trade.get_fields(), self.active_trade.get_money1(),
-                                                self.active_trade.get_money2())
+                                       self.active_trade.get_fields(), self.active_trade.get_money1(),
+                                       self.active_trade.get_money2())
         self.active_trade = None
         self.active_player_pos = self.old_active_player_pos
-        return True        
+        return True

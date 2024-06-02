@@ -80,6 +80,7 @@ async def mortgage_field(game_id: int, player_id: int, field_id: int):
 async def pay(game_id: int, player_id: int):
     return await gm.pay(game_id, player_id)
 
+
 # @app.get("/pay_prison/{game_id}/{player_id}")
 # async def pay_prison(game_id: int, player_id: int):
 #     return await gm.pay_prison(game_id, player_id)
@@ -101,23 +102,29 @@ async def start_game(game_id: int, player_id: int):
 
 
 @app.get("/surrender/{game_id}/{player_id}")
-async def surrender(game_id: int, player_id: int):    
+async def surrender(game_id: int, player_id: int):
     return await gm.surrender(game_id, player_id)
+
 
 @app.post("/request_trade")
 async def trade(playload: dict):
-    return await gm.request_trade (
-        playload['game_id'], 
-        playload['player_id1'], 
-        playload['player_id2'], 
-        playload['money1'], 
-        playload['money2'], 
+    print(playload)
+    x = await gm.request_trade(
+        int(playload['game_id']),
+        int(playload['player_id1']),
+        int(playload['player_id2']),
+        playload['money1'],
+        playload['money2'],
         playload['fields']
     )
+    print(x)
+
 
 @app.get("/answer_trade/{game_id}/{player_id}/{trade_id}/{answer}")
 async def answer_trade(game_id: int, player_id: int, trade_id: int, answer: bool):
-    return await gm.answer_trade(game_id, player_id, trade_id, answer)
+    x = await gm.answer_trade(game_id, player_id, trade_id, answer)
+    print(x)
+
 
 @app.get("/upgrade/{game_id}/{player_id}/{field_id}")
 async def upgrade(game_id: int, player_id: int, field_id: int):
@@ -135,4 +142,3 @@ async def websocket_endpoint(ws: WebSocket, user_id: int, game_id: int):
         # gm.send_message(game_id, data)
 
         await ws.send_text(f"Message text was: {data}")
-

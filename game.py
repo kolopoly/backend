@@ -100,7 +100,7 @@ class Game:
             self.actions[key] = 0
 
     def clean_all_completed_actions_values(self):
-        self.completed_actions = {"buy": False, "end_turn": False, "roll": False, "pay": False}
+        self.completed_actions = {"buy": False, "end_turn": False, "roll": False, "ready_to_pay": False}
         # self.actions["upgrade"] = []
 
     def get_player_position(self, player_id):
@@ -229,12 +229,10 @@ class Game:
                                                  rent)
             self.players[customer_id].set_money(0)
             self.set_player_inactive(customer_id)
-            self.completed_actions["pay"] = True
-            return True
-
-        self.players[customer_id].set_money(self.players[customer_id].get_money() - rent)
-        self.players[owner_id].set_money(self.players[owner_id].get_money() + rent)
-        self.completed_actions["pay"] = True
+        else:
+            self.players[customer_id].set_money(self.players[customer_id].get_money() - rent)
+            self.players[owner_id].set_money(self.players[owner_id].get_money() + rent)
+        self.completed_actions["ready_to_pay"] = False
         return True
 
     def set_player_inactive(self, player_id):
@@ -331,11 +329,6 @@ class Game:
             return False
         if self.active_player_counter == 0:
             return False
-        # if self.completed_actions["roll"] == 0:
-        #     return False
-        # if self.check_if_need_to_pay(player_id):
-        #     return False
-        # self.completed_actions["roll"] = 0
         return True
 
     def check_action_sell(self, player_id):
@@ -368,7 +361,7 @@ class Game:
             return False
         if self.fields[self.players_positions[player_id]].get_owner() == player_id:
             return False
-        if self.completed_actions["pay"]:
+        if not self.completed_actions["ready_to_pay"]:
             return False
         return True
 
@@ -465,7 +458,7 @@ class Game:
         dice2 = roll_dice()
         self.last_rolls = [dice1, dice2]
         self.completed_actions["roll"] = 1
-        self.completed_actions["pay"] = False
+        self.completed_actions["ready_to_pay"] = True
         previous_position = self.players_positions[player_id]
         if self.players[player_id].is_in_prison():
             if dice1 == dice2:

@@ -100,7 +100,7 @@ class Game:
             self.actions[key] = 0
 
     def clean_all_completed_actions_values(self):
-        self.completed_actions = {"buy": 0, "end_turn": 0, "roll": 0, "pay": False}
+        self.completed_actions = {"buy": False, "end_turn": False, "roll": False, "pay": False}
         # self.actions["upgrade"] = []
 
     def get_player_position(self, player_id):
@@ -274,9 +274,10 @@ class Game:
         return self.players_order[self.active_player_pos]
 
     async def update_actions(self, player_id):
-        self.actions = {"buy": self.check_action_buy(player_id), "end_turn": self.check_action_end_turn(player_id),
-                        "roll": self.check_action_roll(player_id), "sell": self.check_action_sell(player_id),
-                        "pay": self.check_action_pay(player_id), "upgrade": self.check_action_upgrade(player_id),
+        self.actions = {"buy": self.check_action_buy(player_id), "roll": self.check_action_roll(player_id),
+                        "sell": self.check_action_sell(player_id), "pay": self.check_action_pay(player_id),
+                        "upgrade": self.check_action_upgrade(player_id),
+                        "end_turn": self.check_action_end_turn(player_id),
                         "surrender": self.check_action_surrender(player_id)}
 
     async def send_game_state(self):
@@ -322,8 +323,10 @@ class Game:
         return True
 
     def check_action_end_turn(self, player_id):
-        if self.players[player_id].is_must_pay():
-            return False        
+        if self.check_action_roll(player_id):
+            return False
+        if self.check_action_pay(player_id):
+            return False
         if self.get_active_player_id() != player_id:
             return False
         if self.active_player_counter == 0:
@@ -474,7 +477,7 @@ class Game:
                 return True
         result = self.update_position(player_id, dice1, dice2)
         if result and previous_position + dice1 + dice2 > len(self.fields):
-            self.players[player_id].set_money(self.players[player_id].get_money() + self.bonus_for_circle)
+            self.players[player_id].add_money(self.bonus_for_circle)
         return True
 
     def sell(self, player_id, field_id):

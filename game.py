@@ -209,7 +209,7 @@ class Game:
         rent = self.fields[field_id].get_fee()
         if self.players[customer_id].get_money() < rent:
             # TODO: bankrupt
-            self.recursive_sell_all(customer_id)
+            self.sell_all_property_for_good(customer_id)
             if self.players[customer_id].get_money() < rent:
                 self.players[owner_id].set_money(self.players[owner_id].get_money() +
                                                  self.players[customer_id].get_money())
@@ -227,26 +227,16 @@ class Game:
     def set_player_inactive(self, player_id):
         self.players_still_in_game[player_id] = False
 
-    def recursive_sell_all(self, player_id):
-        fields_of_player = []
+    def sell_all_property_for_good(self, player_id):
         for field in self.fields:
             if field.get_owner() == player_id:
-                fields_of_player.append(field.get_id())
-        flag_to_continue = False
-        for i in self.check_action_sell(player_id):
-            if i[0]:
-                flag_to_continue = True
-                break
-
-        while flag_to_continue:
-            for field_id in fields_of_player:
-                if self.check_action_sell_field(player_id, field_id):
-                    self.sell_field(player_id, field_id)
-            flag_to_continue = False
-            for i in self.check_action_sell(player_id):
-                if i[0]:
-                    flag_to_continue = True
-                    break
+                while self.check_action_sell_field(player_id, field.get_id()):
+                    self.sell_field(player_id, field.get_id())
+        for field in self.fields:
+            if field.get_owner() == player_id:
+                while self.check_action_sell_field(player_id, field.get_id()):
+                    self.sell_field(player_id, field.get_id())
+                field.set_owner(None)
 
     def check_ids(self, player_ids, field_ids):
         for player_id in player_ids:
@@ -349,8 +339,7 @@ class Game:
         fields_of_player = []
         for field in self.fields:
             if field.get_owner() == player_id and \
-                    self.check_action_sell_field(player_id, field.get_id()) and \
-                    not field.is_mortgaged:
+                    self.check_action_sell_field(player_id, field.get_id()):
                 fields_of_player.append([True, field.get_id()])
             else:
                 fields_of_player.append([False, field.get_id()])
@@ -363,6 +352,8 @@ class Game:
             return False
         if self.fields[field_id].get_field_level() <= 1 and \
                 self.get_max_field_level(self.fields[field_id].get_color()) > self.fields[field_id].get_field_level():
+            return False
+        if self.fields[field_id].get_is_mortgaged():
             return False
         return True
 
@@ -441,7 +432,7 @@ class Game:
     def surrender(self, player_id):
         if player_id != self.get_active_player_id():
             return False
-        self.recursive_sell_all(player_id)
+        self.sell_all_property_for_good(player_id)
         self.players[player_id].set_money(0)
         self.set_player_inactive(player_id)
         self.end_turn(player_id)

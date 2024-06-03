@@ -27,9 +27,9 @@ class Trade:
 
     def get_trade_id(self):
         return self.trade_id
-
+    
     def generate_trade_id(self):
-        res = ''
-        for i in range(8):
+        res = '1'
+        for i in range(7):
             res += str(random.randint(0, 9))
         return res

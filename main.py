@@ -32,9 +32,9 @@ async def connect(user_id: int, game_id: int):
     await websockets.connect(f"ws://localhost:8000/connect/{user_id}/{game_id}")
 
 
-@app.get("/create/{user_id}")
-async def create(user_id: int):
-    game_id = gm.create_game(user_id)
+@app.get("/create/{user_id}/{rule_id}")
+async def create(user_id: int, rule_id: int):
+    game_id = gm.create_game(user_id, rule_id)
     print(f"Game created by user {user_id} with game_id {game_id}")
     return game_id
 
@@ -48,6 +48,18 @@ async def end_turn(game_id: int, player_id: int):
 async def get_rule(rule_id: int):
     with open(f"./rules/{rule_id}.json") as f:
         return json.loads(f.read())
+
+
+@app.post("/save_rule")
+async def save_rule(payload: dict):
+    print(payload)
+    json_files = [f for f in os.listdir("./rules") if f.endswith('.json')]
+    json_files.sort(key=lambda f: int(f.split('.')[0]))
+    id = int(json_files[-1].split('.')[0]) + 1
+    with open(f"./rules/{id}.json", 'w') as file:
+        data = json.dumps(payload)
+        file.write(data)
+    return id
 
 
 @app.get("/get_rules")

@@ -1,0 +1,255 @@
+{
+  "rule_id": 1,
+  "field_amount": 16,
+  "start_balance": 500,
+
+  "fields": [
+     {
+       "name": "Start",
+       "type": "start",
+       "color": "purple",
+       "add_to_balance": 50
+     },
+     {
+      "name": "H&M",
+       "type": "street",
+      "color": "red",
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "Lacoste",
+      "color": "red",
+       "type": "street",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "Zara",
+      "color": "red",
+       "type": "street",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "H&M",
+      "color": "green",
+       "type": "street",
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "Lacoste",
+      "color": "green",
+       "type": "street",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "Zara",
+      "color": "green",
+       "type": "street",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "H&M",
+      "color": "blue",
+       "type": "street",
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "Lacoste",
+      "color": "blue",
+       "type": "street",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "Zara",
+      "color": "blue",
+       "type": "street",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "H&M",
+      "color": "orange",
+       "type": "street",
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "Lacoste",
+       "type": "street",
+      "color": "orange",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "Zara",
+       "type": "street",
+      "color": "orange",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "H&M",
+       "type": "street",
+      "color": "grey",
+      "fees": [
+        2,
+        4,
+        7,
+        12,
+        18,
+        30,
+        50
+      ],
+      "buy_price": 70,
+       "type": "street",
+      "upgrade_price": 30
+    },
+    {
+      "name": "Lacoste",
+       "type": "street",
+      "color": "grey",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    },
+    {
+      "name": "Zara",
+       "type": "street",
+      "color": "grey",
+      "fees": [
+        3,
+        5,
+        9,
+        14,
+        20,
+        33,
+        57
+      ],
+      "buy_price": 70,
+      "upgrade_price": 30
+    }
+  ]
+}

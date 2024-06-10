@@ -5,6 +5,7 @@ from fastapi import FastAPI, WebSocket
 import websockets
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import FileResponse
 
 from gamesmanager import GamesManager
 
@@ -141,6 +142,15 @@ async def answer_trade(game_id: int, player_id: int, trade_id: int, answer: bool
 @app.get("/upgrade/{game_id}/{player_id}/{field_id}")
 async def upgrade(game_id: int, player_id: int, field_id: int):
     return await gm.upgrade(game_id, player_id, field_id)
+
+
+@app.get("/assets/{asset_name}")
+async def assets(asset_name: str):
+    path = f"./assets/{asset_name}"
+    if os.path.exists(path):
+        return FileResponse(path, media_type='application/octet-stream', filename=os.path.basename(path))
+    else:
+        return {"error": "File not found"}
 
 
 # WebSockets:

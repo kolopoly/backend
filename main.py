@@ -35,7 +35,10 @@ async def connect(user_id: int, game_id: int):
 
 @app.get("/create/{user_id}/{rule_id}")
 async def create(user_id: int, rule_id: int):
-    game_id = gm.create_game(user_id, rule_id)
+    with open(f"./rules/{rule_id}.json") as f:
+        rule = f.read()
+        rule = json.loads(rule)
+    game_id = gm.create_game(user_id, rule)
     print(f"Game created by user {user_id} with game_id {game_id}")
     return game_id
 

@@ -30,6 +30,8 @@ class Game:
         self.bonus_for_circle = 100
         self.fields = self.parse_input_rules_json(rules_json)
         self.active_trade = None
+        self.prison_field_id = -1
+        self.find_prison()
         self.active_special_action = False
 
     def parse_input_rules_json(self, json_data):
@@ -77,9 +79,9 @@ class Game:
         self.check_ids([player_id], [])
         self.round += 1
         self.active_player_counter += 1
-        if self.active_player_counter == 3:
-            # TODO: go to jail
-            self.players_positions[player_id] = 0
+        if self.active_player_counter == 3 and self.prison_field_id != -1:
+            self.players[player_id].change_prison_state()
+            self.players_positions[player_id] = self.prison_field_id
         else:
             self.players_positions[player_id] = (self.players_positions[player_id] + dice1 + dice2) % len(self.fields)
             # TODO: check if player passed start
@@ -91,8 +93,12 @@ class Game:
         if self.get_active_player_id() != player_id:
             raise Exception("not active player tries to end turn.")
         self.active_player_pos = (self.active_player_pos + 1) % len(self.players_order)
+        counter = 0
         while not self.players_still_in_game[self.get_active_player_id()]:
             self.active_player_pos = (self.active_player_pos + 1) % len(self.players_order)
+            counter += 1
+            if counter > len(self.players_order):
+                return True
         self.active_player_counter = 0
         self.clean_all_actions_values()
         self.clean_all_completed_actions_values()
@@ -328,7 +334,7 @@ class Game:
     def check_action_end_turn(self, player_id):
         if self.check_action_roll(player_id):
             return False
-        if self.check_action_pay(player_id):
+        if self.check_action_must_pay(player_id):
             return False
         if self.get_active_player_id() != player_id:
             return False
@@ -357,8 +363,23 @@ class Game:
         if self.fields[field_id].get_is_mortgaged():
             return False
         return True
+    
+    def check_action_must_pay(self, player_id):
+        if self.players[player_id].is_must_pay():
+            return True
+        if self.fields[self.players_positions[player_id]].get_is_mortgaged():
+            return False
+        if self.fields[self.players_positions[player_id]].get_owner() is None:
+            return False
+        if self.fields[self.players_positions[player_id]].get_owner() == player_id:
+            return False
+        if not self.completed_actions["ready_to_pay"]:
+            return False
+        return True
 
     def check_action_pay(self, player_id):
+        if self.players[player_id].is_in_prison():
+            return True
         if self.players[player_id].is_must_pay():
             return True
         if self.fields[self.players_positions[player_id]].get_is_mortgaged():
@@ -408,12 +429,12 @@ class Game:
     def check_action_roll(self, player_id):
         if self.get_active_player_id() != player_id:
             return False
-        if self.check_action_pay(player_id):
+        if self.check_action_must_pay(player_id):
             return False
         if self.completed_actions.get("roll", 0) == 1:
             if self.last_rolls[0] != self.last_rolls[1]:
                 return False
-            if self.active_player_counter >= 3:
+            if self.active_player_counter >= 3 and self.prison_field_id != -1:
                 return False
             self.completed_actions["roll"] = 0
         return True
@@ -421,8 +442,8 @@ class Game:
     def check_action_surrender(self, player_id):
         if self.players_order[self.active_player_pos] != player_id:
             return False
-        if self.check_action_pay(player_id):
-            return False
+        # if self.check_action_pay(player_id):
+        #     return False
         return True
 
     def get_possible_actions(self, player_id):
@@ -430,8 +451,17 @@ class Game:
             return []
         return self.actions_list
 
+    def get_number_of_players_still_in_game(self):
+        counter = 0
+        for player in self.players_still_in_game:
+            if self.players_still_in_game[player]:
+                counter += 1
+        return counter
+
     def surrender(self, player_id):
         if player_id != self.get_active_player_id():
+            return False
+        if self.get_number_of_players_still_in_game() <= 1:
             return False
         self.sell_all_property_for_good(player_id)
         self.players[player_id].set_money(0)
@@ -468,11 +498,12 @@ class Game:
         previous_position = self.players_positions[player_id]
         if self.players[player_id].is_in_prison():
             if dice1 == dice2:
-                self.players[player_id].change_prison_state()
+                self.players[player_id].change_prison_state()                
             else:
                 self.players[player_id].number_of_turns_in_prison += 1
                 if self.players[player_id].number_of_turns_in_prison == 3:
                     self.players[player_id].set_must_pay(True)
+                self.active_player_counter = 1
                 return True
         result = self.update_position(player_id, dice1, dice2)
         if result and previous_position + dice1 + dice2 > len(self.fields):
@@ -507,6 +538,8 @@ class Game:
             return False
         self.players[player_id].set_money(self.players[player_id].get_money() - cost)
         self.players[player_id].change_prison_state()
+        if self.players[player_id].is_must_pay():
+            self.players[player_id].set_must_pay(False)
         return True
 
     def upgrade(self, player_id, field_id):
@@ -559,7 +592,6 @@ class Game:
         return True
 
     def answer_trade(self, player_id, trade_id, answer):
-        print(player_id, trade_id, answer, self.active_trade.get_trade_id())
         if self.active_trade is None:
             return "self.active_trade is None:"
         if player_id != self.active_trade.get_player_id2():
@@ -573,7 +605,13 @@ class Game:
         self.active_trade = None
         self.active_player_pos = self.old_active_player_pos
         return True
-
+    
+    def find_prison(self):
+        for field in self.fields:
+            if field.get_type() == "prison":
+                self.prison_field_id = field.get_id()
+                return
+            
     def parse_special_action_result(self, player_id, chosen_variant: str = None):
         if self.fields[self.players_positions[player_id]].get_type() != "special":
             return False

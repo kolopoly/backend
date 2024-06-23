@@ -1,3 +1,6 @@
+import SpecialCard
+
+
 class Field:
     MORTGAGE_TURNS = 5
 
@@ -25,7 +28,10 @@ class Field:
         self.is_mortgaged = False
     
     def create_special_cards(self, cards):
-        return []
+        special_cards = []
+        for card_rule in cards:
+            special_cards.append(SpecialCard(card_rule))
+        return special_cards
     
     def get_escape_price(self):
         return self.escape_price

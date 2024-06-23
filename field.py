@@ -1,4 +1,4 @@
-import SpecialCard
+from specialCard import SpecialCard
 
 
 class Field:

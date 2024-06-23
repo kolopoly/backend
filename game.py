@@ -78,7 +78,7 @@ class Game:
         self.check_ids([player_id], [])
         self.round += 1
         self.active_player_counter += 1
-        if self.active_player_counter == 3:
+        if self.active_player_counter == 3 and self.prison_field_id != -1:
             self.players[player_id].change_prison_state()
             self.players_positions[player_id] = self.prison_field_id
         else:

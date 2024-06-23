@@ -433,7 +433,7 @@ class Game:
         if self.completed_actions.get("roll", 0) == 1:
             if self.last_rolls[0] != self.last_rolls[1]:
                 return False
-            if self.active_player_counter >= 3:
+            if self.active_player_counter >= 3 and self.prison_field_id != -1:
                 return False
             self.completed_actions["roll"] = 0
         return True

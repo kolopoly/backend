@@ -32,7 +32,7 @@ class GamesManager:
             print(f"User {user_id} connected to game {game_id}")
             await self.games[game_id].send_game_state()
             return True
-        return False
+        return False    
 
     def get_users(self, game_id: int):
         if not self.is_game_consist(game_id):
@@ -129,3 +129,8 @@ class GamesManager:
         res = self.games[game_id].answer_trade(player_id, trade_id, answer)
         await self.games[game_id].send_game_state()
         return res
+    
+    def get_rule_id(self, game_id: int):
+        if not self.is_game_consist(game_id):
+            return 0
+        return self.games[game_id].get_rule_id()

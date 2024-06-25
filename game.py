@@ -34,6 +34,9 @@ class Game:
         self.prison_field_id = -1
         self.find_prison()
         self.active_special_action = False
+        
+    def get_rule_id(self):
+        return self.rule_id
 
     def parse_input_rules_json(self, json_data):
         fields_data = json_data.get('fields', [])

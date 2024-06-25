@@ -1,3 +1,6 @@
+from specialCard import SpecialCard
+
+
 class Field:
     MORTGAGE_TURNS = 5
 
@@ -20,7 +23,15 @@ class Field:
             self.add_to_balance = rule["add_to_balance"]
         elif self.type == "prison":
             self.escape_price = rule["escape_price"]
+        elif self.type == "special":
+            self.cards = self.create_special_cards(rule["cards"])
         self.is_mortgaged = False
+    
+    def create_special_cards(self, cards):
+        special_cards = []
+        for card_rule in cards:
+            special_cards.append(SpecialCard(card_rule))
+        return special_cards
     
     def get_escape_price(self):
         return self.escape_price

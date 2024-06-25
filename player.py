@@ -46,4 +46,8 @@ class Player:
             self.number_of_turns_in_prison = 0
 
     async def send_json_message(self, msg):
-        await self.ws.send_text(msg)
+        try:
+            await self.ws.send_text(msg)   
+        except Exception as e:
+            print(e)   
+                

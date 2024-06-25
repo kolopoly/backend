@@ -18,9 +18,9 @@ class GamesManager:
             x = random.randint(1000, 9999)
         return x
 
-    def create_game(self, user_id: int, rule):
+    def create_game(self, user_id: int, rule, rule_id: int):
         game_id = self.generate_random_id()
-        game = Game(game_id, user_id, rule)
+        game = Game(game_id, user_id, rule, rule_id)
         self.games[game_id] = game
         return game_id
 
@@ -110,6 +110,13 @@ class GamesManager:
         return res
     
     async def request_trade(self, game_id: int, player_id1: int, player_id2: int, money1: int, money2: int, fields):
+        if not self.is_game_consist(game_id):
+            return False
+        res = self.games[game_id].request_trade(player_id1, player_id2, money1, money2, fields)
+        await self.games[game_id].send_game_state()
+        return res
+
+    async def answer_special_action(self, game_id: int, player_id: int, chosen_variant: int):
         if not self.is_game_consist(game_id):
             return False
         res = self.games[game_id].request_trade(player_id1, player_id2, money1, money2, fields)

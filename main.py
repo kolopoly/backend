@@ -30,17 +30,24 @@ async def buy(game_id: int, player_id: int):
 
 @app.get("/connect/{user_id}/{game_id}")
 async def connect(user_id: int, game_id: int):
-    await websockets.connect(f"ws://localhost:8000/connect/{user_id}/{game_id}")
-
+    try :
+        return await websockets.connect(f"ws://localhost:8000/connect/{user_id}/{game_id}")
+    except Exception as e:
+        print(e)
+        return False
 
 @app.get("/create/{user_id}/{rule_id}")
 async def create(user_id: int, rule_id: int):
-    with open(f"./rules/{rule_id}.json") as f:
-        rule = f.read()
-        rule = json.loads(rule)
-    game_id = gm.create_game(user_id, rule)
-    print(f"Game created by user {user_id} with game_id {game_id}")
-    return game_id
+    try:
+        with open(f"./rules/{rule_id}.json") as f:
+            rule = f.read()
+            rule = json.loads(rule)
+        game_id = gm.create_game(user_id, rule, rule_id)
+        print(f"Game created by user {user_id} with game_id {game_id}")
+        return game_id
+    except Exception as e:
+        print(e)
+        return 0
 
 
 @app.get("/end_turn/{game_id}/{player_id}")
@@ -163,7 +170,10 @@ async def websocket_endpoint(ws: WebSocket, user_id: int, game_id: int):
     await ws.accept()
     await gm.connect_to_game(game_id, user_id, ws)
     while True:
-        data = await ws.receive_text()
-        # gm.send_message(game_id, data)
-
-        await ws.send_text(f"Message text was: {data}")
+        try:
+            data = await ws.receive_text()
+            print(data)
+            await ws.send_text(f"Message text was: {data}")
+        except Exception as e:
+            print(e)
+            break        

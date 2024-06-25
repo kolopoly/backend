@@ -10,8 +10,9 @@ def roll_dice():
 
 class Game:
 
-    def __init__(self, game_id, host_id, rules_json):
+    def __init__(self, game_id, host_id, rules_json, rule_id):
         self.round = 0
+        self.rule_id = rule_id
         self.game_id = game_id
         self.host_id = host_id
         self.players = {}
@@ -286,7 +287,7 @@ class Game:
     async def send_game_state(self):
         if not self.is_started:
             game_state = {"players": {player_id: self.players[player_id].get_id()
-                                      for player_id in self.players}}
+                                      for player_id in self.players}, "rule_id": self.rule_id}
         else:
             if self.active_trade is None:
                 await self.update_actions(self.get_active_player_id())
@@ -295,7 +296,7 @@ class Game:
                 actions = self.generate_trade_actions()
 
             game_state = {"players": {player_id: self.players[player_id].get_id()
-                                      for player_id in self.players_order},
+                                      for player_id in self.players_order}, "rule_id": self.rule_id,
                           "players_still_in_game": self.players_still_in_game,
                           "players_positions": self.players_positions,
                           "players_money": {player_id: self.players[player_id].get_money()

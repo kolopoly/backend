@@ -18,9 +18,9 @@ class GamesManager:
             x = random.randint(1000, 9999)
         return x
 
-    def create_game(self, user_id: int, rule):
+    def create_game(self, user_id: int, rule, rule_id: int):
         game_id = self.generate_random_id()
-        game = Game(game_id, user_id, rule)
+        game = Game(game_id, user_id, rule, rule_id)
         self.games[game_id] = game
         return game_id
 

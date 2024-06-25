@@ -55,6 +55,12 @@ async def end_turn(game_id: int, player_id: int):
     return await gm.end_turn(game_id, player_id)
 
 
+@app.get("/get_rule_by_game_id/{game_id}")
+async def get_rule(game_id: int):
+    rule_id = gm.get_rule_id(game_id)
+    with open(f"./rules/{rule_id}.json") as f:
+        return json.loads(f.read())
+
 @app.get("/get_rule/{rule_id}")
 async def get_rule(rule_id: int):
     with open(f"./rules/{rule_id}.json") as f:

@@ -13,6 +13,9 @@ class Player:
         self.in_prison = False
         self.number_of_turns_in_prison = 0
         self.must_pay = False
+        
+    def set_ws(self, ws):
+        self.ws = ws
 
     def get_id(self):
         return self.player_id

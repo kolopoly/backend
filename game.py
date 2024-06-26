@@ -2,6 +2,7 @@ import random
 import json
 from field import Field
 from trade import Trade
+from player import Player
 
 
 def roll_dice():
@@ -50,10 +51,13 @@ class Game:
             fields.append(field)
             self.field_ids.append(counter)
             counter += 1
-        return fields
+        return fields    
 
-    def add_player(self, player):  # don't we have to ask for numb of max players in room?
-        self.players[player.get_id()] = player
+    def add_player(self, user_id, ws):  # don't we have to ask for numb of max players in room?
+        if user_id in self.players:
+            self.players[user_id].set_ws(ws)
+            return True
+        self.players[user_id] = Player(user_id, ws)
         return True
 
     def get_users(self):

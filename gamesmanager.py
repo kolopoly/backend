@@ -28,7 +28,7 @@ class GamesManager:
 
         if not self.is_game_consist(game_id):
             return False
-        if self.games[game_id].add_player(Player(user_id, ws)):
+        if self.games[game_id].add_player(user_id, ws):
             print(f"User {user_id} connected to game {game_id}")
             await self.games[game_id].send_game_state()
             return True

@@ -190,3 +190,4 @@ async def websocket_endpoint(ws: WebSocket, user_id: int, game_id: int):
             print(e)
             full_traceback = traceback.format_exc()
             print(full_traceback)
+            break

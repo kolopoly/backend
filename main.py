@@ -179,7 +179,7 @@ async def keep_alive(websocket):
     while True:
         try:
             await websocket.send("ping")
-            await asyncio.sleep(5)
+            await asyncio.sleep(1)
         except websockets.exceptions.ConnectionClosed:
             full_traceback = traceback.format_exc()
             print(full_traceback)

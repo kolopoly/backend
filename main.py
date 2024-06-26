@@ -29,9 +29,9 @@ async def buy(game_id: int, player_id: int):
 
 
 @app.get("/connect/{user_id}/{game_id}")
-async def connect(user_id: int, game_id: int):
+async def connect(user_id: int, game_id: int):    
     try :
-        return await websockets.connect(f"ws://localhost:8000/connect/{user_id}/{game_id}")
+        return await websockets.connect(f"wss://localhost:8000/connect/{user_id}/{game_id}")
     except Exception as e:
         print(e)
         return False
@@ -174,7 +174,8 @@ async def assets(asset_name: str):
 @app.websocket("/connect/{user_id}/{game_id}")
 async def websocket_endpoint(ws: WebSocket, user_id: int, game_id: int):
     await ws.accept()
-    await gm.connect_to_game(game_id, user_id, ws)
+    print("create socket")
+    await gm.connect_to_game(game_id, user_id, ws)    
     while True:
         try:
             data = await ws.receive_text()

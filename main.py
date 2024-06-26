@@ -1,6 +1,7 @@
 import traceback
 import json
 import os
+import asyncio
 
 from fastapi import FastAPI, WebSocket
 import websockets
@@ -174,11 +175,22 @@ async def assets(asset_name: str):
         return {"error": "File not found"}
 
 
+async def keep_alive(websocket):
+    while True:
+        try:
+            await websocket.send("ping")
+            await asyncio.sleep(30)  # Отправляем "ping" каждые 30 секунд
+        except websockets.exceptions.ConnectionClosed:
+            full_traceback = traceback.format_exc()
+            print(full_traceback)
+            break
+
 # WebSockets:
 
 @app.websocket("/connect/{user_id}/{game_id}")
 async def websocket_endpoint(ws: WebSocket, user_id: int, game_id: int):
     await ws.accept()
+    asyncio.create_task(keep_alive(ws))
     print("create socket")
     await gm.connect_to_game(game_id, user_id, ws)    
     while True:

@@ -183,4 +183,3 @@ async def websocket_endpoint(ws: WebSocket, user_id: int, game_id: int):
             await ws.send_text(f"Message text was: {data}")
         except Exception as e:
             print(e)
-            break        

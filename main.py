@@ -1,3 +1,4 @@
+import traceback
 import json
 import os
 
@@ -34,6 +35,8 @@ async def connect(user_id: int, game_id: int):
         return await websockets.connect(f"wss://localhost:8000/connect/{user_id}/{game_id}")
     except Exception as e:
         print(e)
+        full_traceback = traceback.format_exc()
+        print(full_traceback)
         return False
 
 @app.get("/create/{user_id}/{rule_id}")
@@ -47,6 +50,8 @@ async def create(user_id: int, rule_id: int):
         return game_id
     except Exception as e:
         print(e)
+        full_traceback = traceback.format_exc()
+        print(full_traceback)
         return 0
 
 
@@ -183,3 +188,5 @@ async def websocket_endpoint(ws: WebSocket, user_id: int, game_id: int):
             await ws.send_text(f"Message text was: {data}")
         except Exception as e:
             print(e)
+            full_traceback = traceback.format_exc()
+            print(full_traceback)

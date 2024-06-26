@@ -1,5 +1,5 @@
 from fastapi import WebSocket
-
+import traceback
 
 class Player:
     player_id: int
@@ -50,4 +50,6 @@ class Player:
             await self.ws.send_text(msg)   
         except Exception as e:
             print(e)   
+            full_traceback = traceback.format_exc()
+            print(full_traceback)
                 

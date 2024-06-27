@@ -302,7 +302,7 @@ class Game:
             else:
                 actions = self.generate_trade_actions()
 
-            game_state = {"players": {player_id: self.players[player_id].get_id()
+            game_state = {"winner": self.get_winner(), "players": {player_id: self.players[player_id].get_id()
                                       for player_id in self.players_order}, "rule_id": self.rule_id,
                           "players_still_in_game": self.players_still_in_game,
                           "players_positions": self.players_positions,
@@ -465,6 +465,17 @@ class Game:
             if self.players_still_in_game[player]:
                 counter += 1
         return counter
+    
+    def random_player_id_in_game(self):
+        for player_id in self.players_still_in_game:
+            if self.players_still_in_game[player_id]:
+                return player_id
+        return -1
+    
+    def get_winner(self):
+        if self.is_started and self.get_number_of_players_still_in_game() == 1:
+            return self.random_player_id_in_game()
+        return -1
 
     def surrender(self, player_id):
         if player_id != self.get_active_player_id():
